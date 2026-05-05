@@ -1,0 +1,89 @@
+  Euler's Disk Simulation Ver 0.02
+    Date: 06/05/2026
+    Time: 01:05:08    
+    ---------------------------------
+    Disk radius             [m]      0.0376
+    Disk height             [m]      0.0128
+    Disk half height        [m]      0.0064
+    Disk filet radius       [m]      0.0020
+    Inertial moments X/Z    [m^2]  .361E-03
+    Inertial moment Y       [m^2]  .694E-03
+    Disk mass (not needed)  [kg]     0.4387
+    Static friction         [-]       0.500
+    Kinetics friction       [-]      0.3000
+    Rolling friction X-dir  [m]    .375E-05
+    Rolling friction y-dir  [m]    .300E-04
+    Boring  friction        [m]    .300E-03
+    Initial Psi             [rad]    0.0000
+    Initial Theta           [rad]    1.0000
+    Initial Phi             [rad]    0.0000
+    Initial OmegaX          [r/s]    0.0000
+    Initial OmegaY  (cal)   [r/s]    0.0000
+    Initial OmegaZ  (cal)   [r/s]  -14.4569
+    Initial XC              [m]      0.0000
+    Initial YC              [m]      0.0000
+    Initial VXC             [m/s]    0.0000
+    Initial VYC             [m/s]    0.0000
+    Initial motion                        2
+
+  dopri data
+    precision (0=low,1=high)        0
+    start time           0.000
+    end   time          13.834
+    print time           0.001
+    relative tolerance  0.100E-04
+    absolute tolerance  0.100E-04
+    change mode at   0.098   mode= 1
+    change mode at   1.126   mode= 2
+    change mode at   1.215   mode= 1
+    change mode at   2.711   mode= 2
+    change mode at   2.792   mode= 1
+    change mode at   3.779   mode= 2
+    change mode at   3.848   mode= 1
+    change mode at   4.932   mode= 2
+    change mode at   4.997   mode= 1
+    change mode at   5.803   mode= 2
+    change mode at   5.844   mode= 1
+    change mode at   6.665   mode= 2
+    change mode at   6.711   mode= 1
+    change mode at   7.455   mode= 2
+    change mode at   7.504   mode= 1
+    change mode at   8.192   mode= 2
+    change mode at   8.238   mode= 1
+    change mode at   8.874   mode= 2
+    change mode at   8.916   mode= 1
+    change mode at   9.503   mode= 2
+    change mode at   9.543   mode= 1
+    change mode at  10.089   mode= 2
+    change mode at  10.118   mode= 1
+    change mode at  10.627   mode= 2
+    change mode at  10.655   mode= 1
+    change mode at  11.154   mode= 2
+    change mode at  11.166   mode= 1
+    change mode at  11.550   mode= 2
+    change mode at  11.576   mode= 1
+    change mode at  11.906   mode= 2
+    change mode at  11.936   mode= 1
+    change mode at  12.383   mode= 2
+    change mode at  12.389   mode= 1
+    change mode at  12.765   mode= 2
+    change mode at  12.774   mode= 1
+    change mode at  13.117   mode= 2
+    change mode at  13.127   mode= 1
+    change mode at  13.464   mode= 2
+    change mode at  13.487   mode= 1
+    change mode at  13.698   mode= 2
+    change mode at  13.706   mode= 1
+    end time           13.834
+
+    exit status code        1
+    CPU time             0.125
+
+    number of outputs   13857
+    fcn                   386
+    step                   64
+    accept                 52
+    reject                 11
+    relative tolearnc0.10D-04
+    results are saved on file result.txt
+  end

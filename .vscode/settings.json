@@ -1,0 +1,18 @@
+{
+  "fortran.linter.compiler": "gfortran",
+  "fortran.linter.includePaths": [
+    "${workspaceFolder}/build_gfortran",
+    "${workspaceFolder}/model2",
+    "${workspaceFolder}/screen",
+    "${workspaceFolder}/hairer"
+  ],
+  "fortran.linter.extraArgs": [
+    "-J",
+    "${workspaceFolder}/build_gfortran"
+  ],
+  "fortran.fortls.directories": [
+    "${workspaceFolder}/model2",
+    "${workspaceFolder}/screen",
+    "${workspaceFolder}/hairer"
+  ]
+}

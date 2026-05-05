@@ -1,0 +1,26 @@
+C
+      FUNCTION CONTD8(II,X,CON,ICOMP,ND)
+C ----------------------------------------------------------
+C     THIS FUNCTION CAN BE USED FOR CONINUOUS OUTPUT IN CONNECTION
+C     WITH THE OUTPUT-SUBROUTINE FOR DOP853. IT PROVIDES AN
+C     APPROXIMATION TO THE II-TH COMPONENT OF THE SOLUTION AT X.
+C ----------------------------------------------------------
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+      DIMENSION CON(8*ND),ICOMP(ND)
+      COMMON /CONDO8/XOLD,H
+C ----- COMPUTE PLACE OF II-TH COMPONENT 
+      I=0 
+      DO 5 J=1,ND 
+      IF (ICOMP(J).EQ.II) I=J
+   5  CONTINUE
+      IF (I.EQ.0) THEN
+         WRITE (6,*) ' NO DENSE OUTPUT AVAILABLE FOR COMP.',II 
+         RETURN
+      END IF  
+      S=(X-XOLD)/H
+      S1=1.D0-S
+      CONPAR=CON(I+ND*4)+S*(CON(I+ND*5)+S1*(CON(I+ND*6)+S*CON(I+ND*7)))
+      CONTD8=CON(I)+S*(CON(I+ND)+S1*(CON(I+ND*2)+S*(CON(I+ND*3)
+     &        +S1*CONPAR)))
+      RETURN
+      END

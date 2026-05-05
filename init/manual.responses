@@ -1,0 +1,30 @@
+# Manual baseline initial condition.
+# Lines may include comments; run.bat strips everything after '#'.
+
+0.08                 # Disk radius [m]
+0.0128               # Disk height [m]
+0.003                # Disk fillet radius [m]
+7792                 # Disk density [kg/m^3]
+
+0                    # Initial Z rotation psi [deg]
+6                    # Initial X rotation theta [deg]
+0                    # Initial Y rotation phi [deg]
+
+0                    # Initial condition mode: 0=manual, 1=pendulum strike
+0                    # Initial Omega1 [rad/s]
+0                    # Initial Omega2 [rad/s]
+-15                  # Initial Omega3 [rad/s]
+0                    # Initial center velocity Vx [m/s]
+0                    # Initial center velocity Vy [m/s]
+
+0.5                  # Static friction coefficient [-]
+0.3                  # Dynamic friction coefficient [-]
+0.0001               # Rolling resistance x/R [-]
+0.0008               # Rolling resistance y/R [-]
+0.008                # Boring/spin resistance z/R [-]
+
+50                   # End time [s]
+0.0005               # Print time step [s]
+1                    # Integration precision: 0=low, 1=high
+1e-7                 # Relative tolerance
+1e-7                 # Absolute tolerance
