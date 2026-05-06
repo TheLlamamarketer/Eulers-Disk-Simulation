@@ -3,7 +3,7 @@
 This repository is a cleaned-up and lightly modernized working copy of Milan
 Batista's Euler disk simulation program:
 
-https://fpp.edu/~milanb/euler/
+<https://fpp.edu/~milanb/euler/>
 
 The original project provides the Fortran Euler disk model and Windows
 simulation program. This copy keeps that core code, adds a simpler `run.bat`
@@ -39,6 +39,17 @@ Open the current animation manually:
 ```bat
 .\build_gfortran\edisk_gl_viewer.exe animat.txt
 ```
+
+Open the no-solver initial-condition visualizer:
+
+```bat
+.\view_initial.bat
+```
+
+The visualizer opens an interactive native OpenGL window. Drag the sliders to
+change radius, height, initial Euler angles, and `omega1..omega3` without
+running the solver. You can optionally pass a `.responses` file to use it as a
+starting preset.
 
 Run interactively, using the Fortran prompts:
 
@@ -77,10 +88,12 @@ to store experiment results.
 | Path | Role |
 | --- | --- |
 | `run.bat` | Current build/run workflow. |
+| `view_initial.bat` | Builds and opens the no-solver initial-condition visualizer. |
 | `model2/` | Disk physics, simulation input, integration, event handling, and output writing. |
 | `screen/` | Legacy console input and expression-parsing helpers used by `model2/input.f90`. |
 | `hairer/` | Hairer/Wanner DOPRI5 and DOP853 ODE solver sources. |
 | `edisk_gl_viewer.c` | Native OpenGL viewer for `animat.txt`. |
+| `edisk_ic_viewer.c` | Native OpenGL viewer for initial rotations and omega components. |
 | `init/` | Preset response files for reproducible runs. |
 | `archive/` | Historical/reference material that is not part of the active build. |
 

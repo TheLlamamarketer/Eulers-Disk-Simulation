@@ -1,7 +1,7 @@
   Euler's Disk Simulation 
   M.Batista/UL FPP  Version 0.04
     Date: 06/05/2026
-    Time: 01:25:40    
+    Time: 19:28:33    
     ---------------------------------
     Disk radius             [m]      0.0800
     Disk height             [m]      0.0128
@@ -12,29 +12,29 @@
     Inertial moments X/Z    [m^2]  .160E-02
     Inertial moment Y       [m^2]  .318E-02
     Disk mass               [kg]     1.9903
-    Static friction         [-]       0.500
-    Kinetics friction       [-]      0.3000
-    Rolling friction X/R    [-]    .100E-03
-    Rolling friction y/R    [-]    .800E-03
-    Boring  friction z/R    [-]    .800E-02
-    Rolling friction X-dir  [m]    .800E-05
-    Rolling friction y-dir  [m]    .640E-04
-    Boring  friction        [m]    .640E-03
+    Static friction         [-]       0.550
+    Kinetics friction       [-]      0.4000
+    Rolling friction X/R    [-]    .300E-03
+    Rolling friction y/R    [-]    .100E-02
+    Boring  friction z/R    [-]    .300E-02
+    Rolling friction X-dir  [m]    .240E-04
+    Rolling friction y-dir  [m]    .800E-04
+    Boring  friction        [m]    .240E-03
     Initial Psi             [rad]    0.0000
     Initial Theta           [rad]    0.1047
     Initial Phi             [rad]    0.0000
     Initial OmegaX          [r/s]    0.0000
-    Initial OmegaY          [r/s]    0.0000
+    Initial OmegaY          [r/s]    3.0000
     Initial OmegaZ          [r/s]  -15.0000
     Initial XC              [m]      0.0000
     Initial YC              [m]      0.0000
     Initial VXC             [m/s]    0.0000
     Initial VYC             [m/s]    0.0000
-    Initial contact slip    [m/s]    0.0557
+    Initial contact slip    [m/s]    0.2957
     Initial transl. energy  [J]     0.000E+00
-    Initial rot. energy     [J]     0.359E+00
+    Initial rot. energy     [J]     0.387E+00
     Initial potential energy[J]     0.156E+01
-    Initial total energy    [J]     0.192E+01
+    Initial total energy    [J]     0.195E+01
     Energy stop excess      [J]     0.300E-03
     Initial condition mode: manual
     Initial motion                        2
@@ -46,367 +46,300 @@
     print time              0.001
     relative tolerance  0.100E-06
     absolute tolerance  0.100E-06
- EXIT OF DOP853 AT X=        0.6500E-02
-    time                0.007
+ EXIT OF DOP853 AT X=        0.2550E-01
+    time                0.026
 
     status code                 2
 
-    number of outputs          15
-    fcn                    269979
-    step                    19151
-    accept                  14829
-    reject                   4313
-    change mode at   0.007   mode=rolling
- EXIT OF DOP853 AT X=        0.3648E+01
-    time                3.648
+    number of outputs          53
+    fcn                     58513
+    step                     4145
+    accept                   3229
+    reject                    905
+    change mode at   0.026   mode=rolling
+ EXIT OF DOP853 AT X=        0.9386E+01
+    time                9.386
 
     status code                 2
 
-    number of outputs        7286
-    fcn                      2240
-    step                      170
-    accept                     92
-    reject                     78
-    change mode at   3.642   mode=sliding
- EXIT OF DOP853 AT X=        0.3875E+01
-    time                3.875
+    number of outputs       18718
+    fcn                     19643
+    step                     1523
+    accept                    722
+    reject                    801
+    change mode at   9.358   mode=sliding
+ EXIT OF DOP853 AT X=        0.9585E+01
+    time                9.585
 
     status code                 2
 
-    number of outputs        7752
-    fcn                    441035
-    step                    31583
-    accept                  23405
-    reject                   8158
-    change mode at   3.875   mode=rolling
- EXIT OF DOP853 AT X=        0.7167E+01
-    time                7.167
+    number of outputs       19172
+    fcn                    178089
+    step                    12793
+    accept                   9341
+    reject                   3435
+    change mode at   9.585   mode=rolling
+ EXIT OF DOP853 AT X=        0.1630E+02
+    time               16.305
 
     status code                 2
 
-    number of outputs       14325
-    fcn                      6753
-    step                      521
-    accept                    255
-    reject                    266
-    change mode at   7.162   mode=sliding
- EXIT OF DOP853 AT X=        0.7289E+01
-    time                7.289
+    number of outputs       32582
+    fcn                     16148
+    step                     1238
+    accept                    632
+    reject                    605
+    change mode at  16.290   mode=sliding
+ EXIT OF DOP853 AT X=        0.1642E+02
+    time               16.416
 
     status code                 2
 
-    number of outputs       14579
-    fcn                    164092
-    step                    11626
-    accept                   9051
-    reject                   2561
-    change mode at   7.288   mode=rolling
- EXIT OF DOP853 AT X=        0.9179E+01
-    time                9.179
-
-    status code                 2
-
-    number of outputs       18321
-    fcn                      4229
-    step                      325
-    accept                    163
-    reject                    160
-    change mode at   9.160   mode=sliding
- EXIT OF DOP853 AT X=        0.9272E+01
-    time                9.272
-
-    status code                 2
-
-    number of outputs       18546
-    fcn                    107390
-    step                     7296
-    accept                   6783
-    reject                    493
-    change mode at   9.272   mode=rolling
- EXIT OF DOP853 AT X=        0.1097E+02
-    time               10.965
-
-    status code                 2
-
-    number of outputs       21893
-    fcn                      4260
-    step                      326
-    accept                    168
-    reject                    156
-    change mode at  10.946   mode=sliding
- EXIT OF DOP853 AT X=        0.1105E+02
-    time               11.051
-
-    status code                 2
-
-    number of outputs       22104
-    fcn                     81976
-    step                     5802
-    accept                   4538
-    reject                   1247
-    change mode at  11.051   mode=rolling
- EXIT OF DOP853 AT X=        0.1258E+02
-    time               12.584
-
-    status code                 2
-
-    number of outputs       25163
-    fcn                      4157
-    step                      321
-    accept                    156
-    reject                    164
-    change mode at  12.581   mode=sliding
- EXIT OF DOP853 AT X=        0.1268E+02
-    time               12.677
-
-    status code                 2
-
-    number of outputs       25355
-    fcn                    330181
-    step                    22029
-    accept                  21965
-    reject                     52
-    change mode at  12.676   mode=rolling
- EXIT OF DOP853 AT X=        0.1396E+02
-    time               13.957
-
-    status code                 2
-
-    number of outputs       27904
-    fcn                      3166
-    step                      240
-    accept                    131
-    reject                    108
-    change mode at  13.951   mode=sliding
- EXIT OF DOP853 AT X=        0.1403E+02
-    time               14.033
-
-    status code                 2
-
-    number of outputs       28067
-    fcn                    400947
-    step                    26743
-    accept                  26693
-    reject                     36
-    change mode at  14.032   mode=rolling
- EXIT OF DOP853 AT X=        0.1521E+02
-    time               15.207
-
-    status code                 2
-
-    number of outputs       30400
-    fcn                      2864
-    step                      214
-    accept                    127
-    reject                     81
-    change mode at  15.199   mode=sliding
- EXIT OF DOP853 AT X=        0.1529E+02
-    time               15.285
-
-    status code                 2
-
-    number of outputs       30572
-    fcn                    179261
-    step                    11965
-    accept                  11911
-    reject                     37
-    change mode at  15.285   mode=rolling
- EXIT OF DOP853 AT X=        0.1640E+02
-    time               16.402
-
-    status code                 2
-
-    number of outputs       32795
-    fcn                      3680
-    step                      282
-    accept                    144
-    reject                    137
-    change mode at  16.397   mode=sliding
- EXIT OF DOP853 AT X=        0.1647E+02
-    time               16.470
-
-    status code                 2
-
-    number of outputs       32942
-    fcn                    104132
-    step                     6958
-    accept                   6898
-    reject                     35
-    change mode at  16.470   mode=rolling
- EXIT OF DOP853 AT X=        0.1740E+02
-    time               17.401
-
-    status code                 2
-
-    number of outputs       34791
-    fcn                      3466
-    step                      268
-    accept                    129
-    reject                    136
-    change mode at  17.395   mode=sliding
- EXIT OF DOP853 AT X=        0.1746E+02
-    time               17.463
-
-    status code                 2
-
-    number of outputs       34927
-    fcn                    365421
-    step                    24381
-    accept                  24307
-    reject                     58
-    change mode at  17.462   mode=rolling
- EXIT OF DOP853 AT X=        0.1835E+02
-    time               18.348
-
-    status code                 2
-
-    number of outputs       36673
-    fcn                      3663
-    step                      283
-    accept                    137
-    reject                    140
-    change mode at  18.336   mode=sliding
- EXIT OF DOP853 AT X=        0.1840E+02
-    time               18.403
-
-    status code                 2
-
-    number of outputs       36807
-    fcn                    337517
-    step                    22521
-    accept                  22446
-    reject                     43
-    change mode at  18.403   mode=rolling
- EXIT OF DOP853 AT X=        0.1924E+02
-    time               19.244
-
-    status code                 2
-
-    number of outputs       38475
-    fcn                      3519
-    step                      271
-    accept                    134
-    reject                    133
-    change mode at  19.237   mode=sliding
+    number of outputs       32834
+    fcn                    414970
+    step                    28960
+    accept                  24102
+    reject                   4831
+    change mode at  16.416   mode=rolling
  EXIT OF DOP853 AT X=        0.1930E+02
-    time               19.299
+    time               19.304
 
     status code                 2
 
-    number of outputs       38600
-    fcn                     32782
-    step                     2200
-    accept                   2145
-    reject                     35
-    change mode at  19.299   mode=rolling
- EXIT OF DOP853 AT X=        0.2009E+02
-    time               20.092
+    number of outputs       38593
+    fcn                      7673
+    step                      589
+    accept                    298
+    reject                    288
+    change mode at  19.296   mode=sliding
+ EXIT OF DOP853 AT X=        0.1940E+02
+    time               19.403
 
     status code                 2
 
-    number of outputs       40184
-    fcn                      2925
-    step                      221
-    accept                    123
-    reject                     93
-    change mode at  20.091   mode=sliding
- EXIT OF DOP853 AT X=        0.2015E+02
-    time               20.153
+    number of outputs       38807
+    fcn                    261154
+    step                    18408
+    accept                  14666
+    reject                   3722
+    change mode at  19.402   mode=rolling
+ EXIT OF DOP853 AT X=        0.2167E+02
+    time               21.675
 
     status code                 2
 
-    number of outputs       40308
-    fcn                    492087
-    step                    32827
-    accept                  32747
-    reject                     42
-    change mode at  20.153   mode=rolling
- EXIT OF DOP853 AT X=        0.2092E+02
-    time               20.919
+    number of outputs       43339
+    fcn                      6353
+    step                      485
+    accept                    254
+    reject                    228
+    change mode at  21.669   mode=sliding
+ EXIT OF DOP853 AT X=        0.2177E+02
+    time               21.765
 
     status code                 2
 
-    number of outputs       41824
-    fcn                      3330
-    step                      256
-    accept                    128
+    number of outputs       43532
+    fcn                    281006
+    step                    18796
+    accept                  18562
+    reject                    215
+    change mode at  21.765   mode=rolling
+ EXIT OF DOP853 AT X=        0.2371E+02
+    time               23.705
+
+    status code                 2
+
+    number of outputs       47410
+    fcn                      6355
+    step                      487
+    accept                    249
+    reject                    235
+    change mode at  23.704   mode=sliding
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    23.790354957740171     
+ EXIT OF DOP853 AT X=        0.2379E+02
+    time               23.791
+
+    status code                 2
+
+    number of outputs       47583
+    fcn                    150053
+    step                    10725
+    accept                   8019
+    reject                   2692
+    change mode at  23.790   mode=rolling
+ EXIT OF DOP853 AT X=        0.2560E+02
+    time               25.596
+
+    status code                 2
+
+    number of outputs       51182
+    fcn                      5924
+    step                      454
+    accept                    232
+    reject                    221
+    change mode at  25.590   mode=sliding
+ EXIT OF DOP853 AT X=        0.2568E+02
+    time               25.677
+
+    status code                 2
+
+    number of outputs       51355
+    fcn                    351873
+    step                    24765
+    accept                  19864
+    reject                   4885
+    change mode at  25.676   mode=rolling
+ EXIT OF DOP853 AT X=        0.2751E+02
+    time               27.513
+
+    status code                 2
+
+    number of outputs       55023
+    fcn                      6619
+    step                      507
+    accept                    260
+    reject                    245
+    change mode at  27.511   mode=sliding
+ EXIT OF DOP853 AT X=        0.2759E+02
+    time               27.590
+
+    status code                 2
+
+    number of outputs       55182
+    fcn                    460808
+    step                    30766
+    accept                  30595
+    reject                    142
+    change mode at  27.590   mode=rolling
+ EXIT OF DOP853 AT X=        0.2918E+02
+    time               29.181
+
+    status code                 2
+
+    number of outputs       58360
+    fcn                      6333
+    step                      485
+    accept                    249
+    reject                    233
+    change mode at  29.179   mode=sliding
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.249440572964133     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250174002736678     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250194277336423     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250214757642127     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250255454109645     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250336708146037     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250356871307055     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    29.250397636201928     
+ EXIT OF DOP853 AT X=        0.2925E+02
+    time               29.251
+
+    status code                 2
+
+    number of outputs       58503
+    fcn                    993542
+    step                    71028
+    accept                  53058
+    reject                  17956
+    change mode at  29.250   mode=rolling
+ EXIT OF DOP853 AT X=        0.3074E+02
+    time               30.743
+
+    status code                 2
+
+    number of outputs       61477
+    fcn                      5919
+    step                      451
+    accept                    239
+    reject                    211
+    change mode at  30.738   mode=sliding
+ EXIT OF DOP853 AT X=        0.3081E+02
+    time               30.810
+
+    status code                 2
+
+    number of outputs       61621
+    fcn                    312599
+    step                    22051
+    accept                  17509
+    reject                   4527
+    change mode at  30.809   mode=rolling
+ EXIT OF DOP853 AT X=        0.3235E+02
+    time               32.345
+
+    status code                 2
+
+    number of outputs       64679
+    fcn                      6649
+    step                      509
+    accept                    262
+    reject                    245
+    change mode at  32.339   mode=sliding
+ EXIT OF DOP853 AT X=        0.3240E+02
+    time               32.405
+
+    status code                 2
+
+    number of outputs       64811
+    fcn                    126881
+    step                     8497
+    accept                   8353
     reject                    125
-    change mode at  20.911   mode=sliding
- EXIT OF DOP853 AT X=        0.2097E+02
-    time               20.969
+    change mode at  32.404   mode=rolling
+ EXIT OF DOP853 AT X=        0.3385E+02
+    time               33.847
 
     status code                 2
 
-    number of outputs       41940
-    fcn                     95872
-    step                     6410
-    accept                   6340
-    reject                     49
-    change mode at  20.969   mode=rolling
- EXIT OF DOP853 AT X=        0.2170E+02
-    time               21.703
+    number of outputs       67690
+    fcn                      7211
+    step                      555
+    accept                    276
+    reject                    276
+    change mode at  33.844   mode=sliding
+ EXIT OF DOP853 AT X=        0.3391E+02
+    time               33.908
 
     status code                 2
 
-    number of outputs       43389
-    fcn                     37511
-    step                     2791
-    accept                   1702
-    reject                   1084
-    change mode at  21.694   mode=sliding
- EXIT OF DOP853 AT X=        0.2175E+02
-    time               21.750
+    number of outputs       67817
+    fcn                    858758
+    step                    60384
+    accept                  48633
+    reject                  11730
+    change mode at  33.907   mode=rolling
+ EXIT OF DOP853 AT X=        0.3548E+02
+    time               35.484
 
     status code                 2
 
-    number of outputs       43501
-    fcn                    323853
-    step                    21605
-    accept                  21549
-    reject                     34
-    change mode at  21.749   mode=rolling
- EXIT OF DOP853 AT X=        0.2254E+02
-    time               22.542
+    number of outputs       70966
+    fcn                      9193
+    step                      709
+    accept                    348
+    reject                    358
+    change mode at  35.482   mode=sliding
+ EXIT OF DOP853 AT X=        0.3554E+02
+    time               35.539
 
     status code                 2
 
-    number of outputs       45082
-    fcn                      4339
-    step                      331
-    accept                    174
-    reject                    153
-    change mode at  22.540   mode=sliding
- EXIT OF DOP853 AT X=        0.2259E+02
-    time               22.591
+    number of outputs       71080
+    fcn                    267991
+    step                    17891
+    accept                  17797
+    reject                     80
+    change mode at  35.539   mode=rolling
+    end time           50.000
 
-    status code                 2
+    exit status code            1
+    CPU time             3.188
 
-    number of outputs       45184
-    fcn                    319094
-    step                    22240
-    accept                  18613
-    reject                   3616
-    change mode at  22.591   mode=rolling
- EXIT OF DOP853 AT X=        0.4978E+02
-    time               49.782
-
-    status code                 2
-
-    number of outputs       99564
-    fcn                  37777330
-    step                  2733292
-    accept                1927779
-    reject                 805512
-    end time           49.781
-
-    exit status code            0
-    CPU time            13.953
-
-    number of outputs       99564
-    fcn                  37777330
-    step                  2733292
-    accept                1927779
-    reject                 805512
+    number of outputs      100001
+    fcn                    160448
+    step                    12426
+    accept                   5940
+    reject                   6482
     relative tolearnc0.10D-06
     results are saved on file result.txt
   end

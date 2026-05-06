@@ -12,16 +12,16 @@
 
 0                    # Initial condition mode: 0=manual, 1=pendulum strike
 0                    # Initial Omega1 [rad/s]
-0                    # Initial Omega2 [rad/s]
+3                    # Initial Omega2 [rad/s]
 -15                  # Initial Omega3 [rad/s]
 0                    # Initial center velocity Vx [m/s]
 0                    # Initial center velocity Vy [m/s]
 
-0.5                  # Static friction coefficient [-]
-0.3                  # Dynamic friction coefficient [-]
-0.0001               # Rolling resistance x/R [-]
-0.0008               # Rolling resistance y/R [-]
-0.008                # Boring/spin resistance z/R [-]
+0.55                 # Static friction coefficient mu_s [-]
+0.4                  # Dynamic friction coefficient mu_k [-]
+0.0003               # Rolling resistance x/R [-]
+0.001                # Rolling resistance y/R [-]
+0.003                # Boring/spin resistance z/R [-]
 
 50                   # End time [s]
 0.0005               # Print time step [s]

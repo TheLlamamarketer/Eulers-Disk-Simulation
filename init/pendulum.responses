@@ -1,35 +1,32 @@
-0.08                 # Disk radius [m]
+0.05                 # Disk radius [m]
 0.0128               # Disk height [m]
 0.003                # Disk fillet radius [m]
 7792                 # Disk density [kg/m^3]
 
 0                    # Initial Z rotation psi [deg]
-1.14591559026        # Initial X rotation theta [deg]
+0                    # Initial X rotation theta [deg]
 0                    # Initial Y rotation phi [deg]
 
 1                    # Initial condition mode: 0=manual, 1=pendulum strike
-0.5                 # Pendulum mass [kg]
+0.5                  # Pendulum mass [kg]
 0.4                  # Pendulum length [m]
-45                   # Pendulum release angle [deg]
+43.25                # Pendulum release angle [deg]
 0.2                  # Restitution coefficient [-]
 1                    # Impact efficiency [-]
-90                   # Strike direction angle [deg]
+270                  # Strike direction angle [deg]
 1                    # Strike surface: 0=rim, 1=+face, 2=-face
-0.08                 # Strike face radius in disk plane [m]
-# For this 90 deg side strike, face angle controls the side-flop component:
-#   near 0 deg: spin-dominant
-#   larger |angle|: stronger tip/flop and more contact-model chatter
-10                   # Strike face angle in disk plane [deg]
+0.045                # Strike face radius in disk plane [m]
+16                   # Strike face angle in disk plane [deg]
 1                    # Post-impact center velocity: 0=free, 1=supported, 2=rolling
 
-0.8                  # Static friction coefficient [-]
-0.05                 # Dynamic friction coefficient [-]
-0.00000125           # Rolling resistance x/R [-]
-0.000008             # Rolling resistance y/R [-]
-0.00008              # Boring/spin resistance z/R [-]
+0.55                 # Static friction coefficient mu_s [-]
+0.4                  # Dynamic friction coefficient mu_k [-]
+0.0003               # Rolling resistance x/R [-]
+0.001                # Rolling resistance y/R [-]
+0.003               # Boring/spin resistance z/R [-]
 
-120                   # End time [s]
+100                  # End time [s]
 0.001                # Print time step [s]
 1                    # Integration precision: 0=low, 1=high
-1e-6                 # Relative tolerance
-1e-6                 # Absolute tolerance
+1e-7                 # Relative tolerance
+1e-7                 # Absolute tolerance
