@@ -132,8 +132,13 @@
      &   initial_total_energy
       write( iuout,'(4X,A,2X,E10.3)') 'Energy stop excess      [J]  ', &
      &   energy_stop_tol
-      if (strike_mass > ZERO) then
-         write( iuout,'(4X,A)') 'Initial condition mode: pendulum strike'
+      if (strike_count > 0) then
+         if (strike_count == 2) then
+            write( iuout,'(4X,A)') &
+     &         'Initial condition mode: double pendulum strike'
+         else
+            write( iuout,'(4X,A)') 'Initial condition mode: pendulum strike'
+         endif
          write( iuout,'(4X,A,2X,F8.4)') 'Pendulum mass          [kg] ',strike_mass
          write( iuout,'(4X,A,2X,F8.4)') 'Pendulum length        [m]  ',strike_length
          write( iuout,'(4X,A,2X,F8.4)') 'Release angle          [rad]',strike_release
@@ -147,19 +152,42 @@
      &      strike_point(1),strike_point(2),strike_point(3)
          write( iuout,'(4X,A,2X,F8.4)') 'Pendulum speed         [m/s]',strike_speed
          write( iuout,'(4X,A,2X,E10.3)') 'Impact impulse         [Ns] ',strike_impulse
-         write( iuout,'(4X,A,2X,F8.4)') 'Strike torque tip/spin [-] ', &
+         if (strike_count == 2) then
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Pendulum 2 mass        [kg] ',strike2_mass
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Pendulum 2 length      [m]  ',strike2_length
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Release 2 angle        [rad]',strike2_release
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Restitution 2 coeff    [-]  ',strike2_restitution
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Impact 2 efficiency    [-]  ',strike2_efficiency
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Strike 2 direction     [rad]',strike2_direction
+            write( iuout,'(4X,A,2X,I4)') &
+     &         'Strike 2 surface mode       ',strike2_surface
+            write( iuout,'(4X,A,3(2X,F9.4))') &
+     &         'Strike point 2 body [m]     ', &
+     &         strike2_point(1),strike2_point(2),strike2_point(3)
+            write( iuout,'(4X,A,2X,F8.4)') &
+     &         'Pendulum 2 speed       [m/s]',strike2_speed
+            write( iuout,'(4X,A,2X,E10.3)') &
+     &         'Impact 2 impulse       [Ns] ',strike2_impulse
+         endif
+         write( iuout,'(4X,A,2X,F8.4)') 'Strike torque wobble/axis [-]', &
      &      strike_torque_tip_spin
-         write( iuout,'(4X,A,2X,F8.4)') 'Initial omega tip/spin [-] ', &
+         write( iuout,'(4X,A,2X,F8.4)') 'Initial omega wobble/axis [-]', &
      &      strike_omega_tip_spin
          if (strike_omega_tip_spin > 0.5_8) then
             write( iuout,'(4X,A)') &
-     &         'Launch warning: strong tipping impulse; expect flop/chatter.'
+     &         'Launch warning: little axis spin; expect orbiting/flop/chatter.'
          else if (strike_omega_tip_spin > 0.25_8) then
             write( iuout,'(4X,A)') &
-     &         'Launch note: mixed spin/tip impulse; near-flat motion likely.'
+     &         'Launch note: mixed axis spin and wobble; near-flat motion likely.'
          else
             write( iuout,'(4X,A)') &
-     &         'Launch note: spin-dominant impulse.'
+     &         'Launch note: axis-spin-dominant impulse.'
          endif
       else
          write( iuout,'(4X,A)') 'Initial condition mode: manual'
@@ -167,7 +195,7 @@
       write( iuout,'(4X,A,2X,i8)') 'Initial motion               ',mode
 !
 	   write(iuout,'(/2x,a)')         'dopri data'
-	   write(iuout,'( 4x,a,2x,i6)') 'precision (0=low,1=high) ',prec
+	   write(iuout,'( 4x,a)') 'precision             high'
 	   write(iuout,'( 4x,a,2x,f9.3)') 'start time        ',tstart
 	   write(iuout,'( 4x,a,2x,f9.3)') 'end   time        ',tend
 	   write(iuout,'( 4x,a,2x,f9.3)') 'print time        ',tprint
@@ -219,13 +247,8 @@
             iwork(20 + i) = i
          enddo      
 !
-         if (prec == LOW) then
-         call DOPRI5( n, disk, t, y, tend, rtol, atol, itol, solout, iout,&
-     &   work, lwork, iwork, liwork, rpar, ipar, idid)
-         else if (prec == HIGH) then
          call DOP853( n, disk, t, y, tend, rtol, atol, itol, solout, iout,&
      &   work, lwork, iwork, liwork, rpar, ipar, idid)
-         endif
 
          if (idid < 0 .or. idid == 1) exit
 	      write(iuout,'( 4x,a,t22,f8.3)') 'time',t
@@ -264,7 +287,9 @@
             y(6) = omega30
             y(7) = xxc0
             y(8) = yyc0
-            slip_seed = 1.0d-8
+!           Start a new sliding segment outside the unresolved microslip
+!           band used by the regularized kinetic friction law.
+            slip_seed = max(10000.0d0*abstol, 5.0d0*slip_regularization)
             force_mag = sqrt(fx*fx + fy*fy)
             if (force_mag > 0.0d0) then
                y(9)  = vcx0 - slip_seed*fx/force_mag

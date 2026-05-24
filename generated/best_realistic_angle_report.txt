@@ -1,0 +1,225 @@
+  Euler's Disk Simulation 
+  M.Batista/UL FPP  Version 0.04
+    Date: 17/05/2026
+    Time: 01:36:40    
+    ---------------------------------
+    Disk radius             [m]      0.0500
+    Disk height             [m]      0.0100
+    Disk half height        [m]      0.0050
+    Disk filet radius       [m]      0.0010
+    Disk volume             [m^3]   0.784E-04
+    Disk density          [kg/m3]     7792.00
+    Inertial moments X/Z    [m^2]  .632E-03
+    Inertial moment Y       [m^2]  .125E-02
+    Disk mass               [kg]     0.6109
+    Static friction         [-]       0.450
+    Kinetics friction       [-]      0.2500
+    Rolling friction X/R    [-]    .180E-03
+    Rolling friction y/R    [-]    .650E-03
+    Boring  friction z/R    [-]    .800E-03
+    Rolling friction X-dir  [m]    .900E-05
+    Rolling friction y-dir  [m]    .325E-04
+    Boring  friction        [m]    .400E-04
+    Initial Psi             [rad]    0.0000
+    Initial Theta           [rad]    0.0000
+    Initial Phi             [rad]    0.0000
+    Initial OmegaX          [r/s]   -2.7924
+    Initial OmegaY          [r/s]   20.2325
+    Initial OmegaZ          [r/s]   -4.4370
+    Initial XC              [m]      0.0000
+    Initial YC              [m]      0.0000
+    Initial VXC             [m/s]    0.0000
+    Initial VYC             [m/s]    0.0000
+    Initial contact slip    [m/s]    1.0212
+    Initial transl. energy  [J]     0.531E-32
+    Initial rot. energy     [J]     0.161E+00
+    Initial potential energy[J]     0.300E+00
+    Initial total energy    [J]     0.461E+00
+    Energy stop excess      [J]     0.300E-03
+    Initial condition mode: double pendulum strike
+    Pendulum mass          [kg]     0.2500
+    Pendulum length        [m]      0.8000
+    Release angle          [rad]    0.4800
+    Restitution coeff      [-]      0.2000
+    Impact efficiency      [-]      0.9000
+    Strike direction       [rad]    0.0698
+    Strike surface mode              1
+    Post-impact velocity mode        0
+    Strike point body [m]            0.0000     0.0050     0.0450
+    Pendulum speed         [m/s]    1.3315
+    Impact impulse         [Ns]    0.172E+00
+    Pendulum 2 mass        [kg]     0.2500
+    Pendulum 2 length      [m]      0.8000
+    Release 2 angle        [rad]    0.4800
+    Restitution 2 coeff    [-]      0.2000
+    Impact 2 efficiency    [-]      0.9000
+    Strike 2 direction     [rad]    3.2114
+    Strike 2 surface mode            2
+    Strike point 2 body [m]         -0.0000    -0.0050    -0.0450
+    Pendulum 2 speed       [m/s]    1.3315
+    Impact 2 impulse       [Ns]    0.172E+00
+    Strike torque wobble/axis [-]    0.1313
+    Initial omega wobble/axis [-]    0.2591
+    Launch note: mixed axis spin and wobble; near-flat motion likely.
+    Initial motion                        2
+
+  dopri data
+    precision             high
+    start time              0.000
+    end   time            100.000
+    print time              0.001
+    relative tolerance  0.100E-06
+    absolute tolerance  0.100E-06
+ EXIT OF DOP853 AT X=        0.1121E+01
+    time                1.121
+
+    status code                 2
+
+    number of outputs        1123
+    fcn                     16472
+    step                     1182
+    accept                    867
+    reject                    313
+    change mode at   1.121   mode=rolling
+ EXIT OF DOP853 AT X=        0.1624E+02
+    time               16.244
+
+    status code                 2
+
+    number of outputs       16236
+    fcn                     37936
+    step                     2910
+    accept                   1481
+    reject                   1425
+    change mode at  16.234   mode=sliding
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    17.220169387987589     
+ EXIT OF DOP853 AT X=        0.4434E+02
+    time               44.335
+
+    status code                 2
+
+    number of outputs       44337
+    fcn                    526806
+    step                    36396
+    accept                  31612
+    reject                   4779
+    change mode at  44.335   mode=rolling
+ EXIT OF DOP853 AT X=        0.5098E+02
+    time               50.981
+
+    status code                 2
+
+    number of outputs       50978
+    fcn                     32371
+    step                     2491
+    accept                   1242
+    reject                   1248
+    change mode at  50.976   mode=sliding
+ EXIT OF DOP853 AT X=        0.5162E+02
+    time               51.620
+
+    status code                 2
+
+    number of outputs       51621
+    fcn                     12093
+    step                      841
+    accept                    710
+    reject                    126
+    change mode at  51.619   mode=rolling
+ EXIT OF DOP853 AT X=        0.5723E+02
+    time               57.233
+
+    status code                 2
+
+    number of outputs       57230
+    fcn                     32999
+    step                     2547
+    accept                   1245
+    reject                   1299
+    change mode at  57.228   mode=sliding
+ EXIT OF DOP853 AT X=        0.5763E+02
+    time               57.626
+
+    status code                 2
+
+    number of outputs       57628
+    fcn                      7705
+    step                      541
+    accept                    438
+    reject                     98
+    change mode at  57.626   mode=rolling
+ EXIT OF DOP853 AT X=        0.6244E+02
+    time               62.437
+
+    status code                 2
+
+    number of outputs       62434
+    fcn                     32897
+    step                     2549
+    accept                   1214
+    reject                   1333
+    change mode at  62.432   mode=sliding
+ EXIT OF DOP853 AT X=        0.6267E+02
+    time               62.668
+
+    status code                 2
+
+    number of outputs       62670
+    fcn                      4873
+    step                      349
+    accept                    258
+    reject                     86
+    change mode at  62.668   mode=rolling
+ EXIT OF DOP853 AT X=        0.6673E+02
+    time               66.728
+
+    status code                 2
+
+    number of outputs       66729
+    fcn                     32603
+    step                     2543
+    accept                   1157
+    reject                   1384
+    change mode at  66.727   mode=sliding
+ EXIT OF DOP853 AT X=        0.6691E+02
+    time               66.909
+
+    status code                 2
+
+    number of outputs       66911
+    fcn                      3783
+    step                      271
+    accept                    200
+    reject                     66
+    change mode at  66.909   mode=rolling
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    84.616109433212131     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    85.239761830168817     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    85.416394295148351     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    86.784740808726511     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    87.174081346295239     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    87.821646089929416     
+  THE PROBLEM SEEMS TO BECOME STIFF AT X =    87.882307237403055     
+    energy stop        89.601
+ EXIT OF DOP853 AT X=        0.8960E+02
+    time               89.601
+
+    status code                 2
+
+    number of outputs       89602
+    fcn                  10029722
+    step                   767028
+    accept                 398103
+    reject                 368924
+    end time           89.601
+
+    exit status code            0
+    CPU time             4.906
+
+    number of outputs       89602
+    fcn                  10029722
+    step                   767028
+    accept                 398103
+    reject                 368924
+    relative tolearnc0.10D-06
+    results are saved on file result.txt
+  end

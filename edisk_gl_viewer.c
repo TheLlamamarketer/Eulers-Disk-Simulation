@@ -8,7 +8,7 @@
  *   frame_count
  *   t psi theta phi xc yc zc xp yp
  * Also reads report.txt from the same folder when available so pendulum-strike
- * runs can show the strike point on the disk.
+ * runs can show the strike point or two strike points on the disk.
  *
  * Controls:
  *   left drag       orbit camera
@@ -54,8 +54,10 @@ typedef struct AnimData {
     double rho;
     int n;
     int strike_mode;
-    int strike_point_valid;
-    double strike_point[3];
+    int strike_point_count;
+    int strike_direction_known[2];
+    double strike_point[2][3];
+    double strike_direction[2];
     Frame *frames;
     double min_x;
     double max_x;
@@ -233,6 +235,27 @@ static void apply_quat_rotation(const double q[4])
     glMultMatrixd(m);
 }
 
+static void quat_inverse_rotate_vec(const double q[4], const double v[3], double out[3])
+{
+    double w = q[0];
+    double x = q[1];
+    double y = q[2];
+    double z = q[3];
+    double m00 = 1.0 - 2.0*y*y - 2.0*z*z;
+    double m01 = 2.0*x*y - 2.0*z*w;
+    double m02 = 2.0*x*z + 2.0*y*w;
+    double m10 = 2.0*x*y + 2.0*z*w;
+    double m11 = 1.0 - 2.0*x*x - 2.0*z*z;
+    double m12 = 2.0*y*z - 2.0*x*w;
+    double m20 = 2.0*x*z - 2.0*y*w;
+    double m21 = 2.0*y*z + 2.0*x*w;
+    double m22 = 1.0 - 2.0*x*x - 2.0*y*y;
+
+    out[0] = m00*v[0] + m10*v[1] + m20*v[2];
+    out[1] = m01*v[0] + m11*v[1] + m21*v[2];
+    out[2] = m02*v[0] + m12*v[1] + m22*v[2];
+}
+
 static int contact_point_reliable(const Frame *f)
 {
     const double near_flat_margin = 0.035;
@@ -286,10 +309,17 @@ static int read_report(const char *anim_path, AnimData *data)
     char line[512];
 
     data->strike_mode = 0;
-    data->strike_point_valid = 0;
-    data->strike_point[0] = 0.0;
-    data->strike_point[1] = 0.0;
-    data->strike_point[2] = 0.0;
+    data->strike_point_count = 0;
+    data->strike_direction_known[0] = 0;
+    data->strike_direction_known[1] = 0;
+    data->strike_point[0][0] = 0.0;
+    data->strike_point[0][1] = 0.0;
+    data->strike_point[0][2] = 0.0;
+    data->strike_point[1][0] = 0.0;
+    data->strike_point[1][1] = 0.0;
+    data->strike_point[1][2] = 0.0;
+    data->strike_direction[0] = 0.0;
+    data->strike_direction[1] = 0.0;
 
     report_path_for_anim_path(anim_path, report_path, sizeof(report_path));
     fp = fopen(report_path, "r");
@@ -300,8 +330,49 @@ static int read_report(const char *anim_path, AnimData *data)
     while (fgets(line, sizeof(line), fp)) {
         char *p = trim_left(line);
 
+        if (strstr(p, "Initial condition mode: double pendulum strike") != NULL) {
+            data->strike_mode = 2;
+            continue;
+        }
+
         if (strstr(p, "Initial condition mode: pendulum strike") != NULL) {
             data->strike_mode = 1;
+            continue;
+        }
+
+        if (strstr(p, "Strike 2 direction") != NULL) {
+            double direction;
+
+            if (sscanf(p, "Strike 2 direction [rad] %lf", &direction) == 1) {
+                data->strike_direction[1] = direction;
+                data->strike_direction_known[1] = 1;
+            }
+            continue;
+        }
+
+        if (strstr(p, "Strike direction") != NULL) {
+            double direction;
+
+            if (sscanf(p, "Strike direction [rad] %lf", &direction) == 1) {
+                data->strike_direction[0] = direction;
+                data->strike_direction_known[0] = 1;
+            }
+            continue;
+        }
+
+        if (strstr(p, "Strike point 2 body") != NULL) {
+            double x;
+            double y;
+            double z;
+
+            if (sscanf(p, "Strike point 2 body [m] %lf %lf %lf", &x, &y, &z) == 3) {
+                data->strike_point[1][0] = x;
+                data->strike_point[1][1] = y;
+                data->strike_point[1][2] = z;
+                if (data->strike_point_count < 2) {
+                    data->strike_point_count = 2;
+                }
+            }
             continue;
         }
 
@@ -311,10 +382,12 @@ static int read_report(const char *anim_path, AnimData *data)
             double z;
 
             if (sscanf(p, "Strike point body [m] %lf %lf %lf", &x, &y, &z) == 3) {
-                data->strike_point[0] = x;
-                data->strike_point[1] = y;
-                data->strike_point[2] = z;
-                data->strike_point_valid = 1;
+                data->strike_point[0][0] = x;
+                data->strike_point[0][1] = y;
+                data->strike_point[0][2] = z;
+                if (data->strike_point_count < 1) {
+                    data->strike_point_count = 1;
+                }
             }
         }
     }
@@ -735,36 +808,154 @@ static void draw_disk_arrows(void)
     glEnable(GL_LIGHTING);
 }
 
-static void draw_strike_marker(void)
+static void draw_arrow_geometry(double x, double y, double z,
+                                const double dir[3],
+                                double length,
+                                double head_length,
+                                double head_width)
+{
+    double tip[3];
+    double base[3];
+    double ref[3] = {0.0, 0.0, 1.0};
+    double side[3];
+    double side2[3];
+    double side_len;
+    double side2_len;
+
+    if (fabs(dir[2]) > 0.88) {
+        ref[0] = 0.0;
+        ref[1] = 1.0;
+        ref[2] = 0.0;
+    }
+
+    side[0] = dir[1]*ref[2] - dir[2]*ref[1];
+    side[1] = dir[2]*ref[0] - dir[0]*ref[2];
+    side[2] = dir[0]*ref[1] - dir[1]*ref[0];
+    side_len = sqrt(side[0]*side[0] + side[1]*side[1] + side[2]*side[2]);
+    if (side_len <= 1.0e-12) {
+        return;
+    }
+    side[0] /= side_len;
+    side[1] /= side_len;
+    side[2] /= side_len;
+
+    side2[0] = dir[1]*side[2] - dir[2]*side[1];
+    side2[1] = dir[2]*side[0] - dir[0]*side[2];
+    side2[2] = dir[0]*side[1] - dir[1]*side[0];
+    side2_len = sqrt(side2[0]*side2[0] + side2[1]*side2[1] + side2[2]*side2[2]);
+    if (side2_len <= 1.0e-12) {
+        return;
+    }
+    side2[0] /= side2_len;
+    side2[1] /= side2_len;
+    side2[2] /= side2_len;
+
+    tip[0] = x + length*dir[0];
+    tip[1] = y + length*dir[1];
+    tip[2] = z + length*dir[2];
+
+    base[0] = tip[0] - head_length*dir[0];
+    base[1] = tip[1] - head_length*dir[1];
+    base[2] = tip[2] - head_length*dir[2];
+
+    glBegin(GL_LINES);
+    glVertex3d(x, y, z);
+    glVertex3d(tip[0], tip[1], tip[2]);
+    glEnd();
+
+    glBegin(GL_TRIANGLES);
+    glVertex3d(tip[0], tip[1], tip[2]);
+    glVertex3d(base[0] + head_width*side[0], base[1] + head_width*side[1], base[2] + head_width*side[2]);
+    glVertex3d(base[0] - head_width*side[0], base[1] - head_width*side[1], base[2] - head_width*side[2]);
+
+    glVertex3d(tip[0], tip[1], tip[2]);
+    glVertex3d(base[0] + head_width*side2[0], base[1] + head_width*side2[1], base[2] + head_width*side2[2]);
+    glVertex3d(base[0] - head_width*side2[0], base[1] - head_width*side2[1], base[2] - head_width*side2[2]);
+    glEnd();
+}
+
+static void draw_strike_direction_arrow(const Frame *f,
+                                        double x,
+                                        double y,
+                                        double z,
+                                        double direction,
+                                        float red,
+                                        float green,
+                                        float blue)
+{
+    double world_dir[3] = {cos(direction), sin(direction), 0.0};
+    double local_dir[3];
+    double dir_len;
+    double length = 0.70 * g_data.r;
+    double head_length = 0.18 * g_data.r;
+    double head_width = 0.075 * g_data.r;
+
+    quat_inverse_rotate_vec(f->q, world_dir, local_dir);
+    dir_len = sqrt(local_dir[0]*local_dir[0] + local_dir[1]*local_dir[1] + local_dir[2]*local_dir[2]);
+    if (dir_len <= 1.0e-12) {
+        return;
+    }
+    local_dir[0] /= dir_len;
+    local_dir[1] /= dir_len;
+    local_dir[2] /= dir_len;
+
+    glColor3f(0.03f, 0.03f, 0.03f);
+    glLineWidth(7.0f);
+    draw_arrow_geometry(x, y, z, local_dir, length, head_length, 1.45 * head_width);
+
+    glColor3f(red, green, blue);
+    glLineWidth(4.0f);
+    draw_arrow_geometry(x, y, z, local_dir, length, head_length, head_width);
+}
+
+static void draw_strike_marker(const Frame *f)
 {
     double x;
     double y;
     double z;
+    int i;
 
-    if (!(g_data.strike_mode && g_data.strike_point_valid && g_frame == 0)) {
+    if (!(g_data.strike_mode && g_data.strike_point_count > 0 && g_frame == 0)) {
         return;
     }
-
-    x = g_data.strike_point[0];
-    y = g_data.strike_point[2];
-    z = -g_data.strike_point[1];
 
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
 
-    glPointSize(14.0f);
-    glBegin(GL_POINTS);
-    glColor3f(0.04f, 0.04f, 0.04f);
-    glVertex3d(x, y, z);
-    glEnd();
+    for (i = 0; i < g_data.strike_point_count && i < 2; i++) {
+        x = g_data.strike_point[i][0];
+        y = g_data.strike_point[i][2];
+        z = -g_data.strike_point[i][1];
 
-    glPointSize(8.0f);
-    glBegin(GL_POINTS);
-    glColor3f(0.98f, 0.72f, 0.12f);
-    glVertex3d(x, y, z);
-    glEnd();
+        if (g_data.strike_direction_known[i]) {
+            if (i == 0) {
+                draw_strike_direction_arrow(f, x, y, z, g_data.strike_direction[i],
+                                            1.0f, 0.54f, 0.05f);
+            } else {
+                draw_strike_direction_arrow(f, x, y, z, g_data.strike_direction[i],
+                                            0.02f, 0.62f, 1.0f);
+            }
+        }
+
+        glPointSize(14.0f);
+        glBegin(GL_POINTS);
+        glColor3f(0.04f, 0.04f, 0.04f);
+        glVertex3d(x, y, z);
+        glEnd();
+
+        glPointSize(8.0f);
+        glBegin(GL_POINTS);
+        if (i == 0) {
+            glColor3f(0.98f, 0.72f, 0.12f);
+        } else {
+            glColor3f(0.10f, 0.78f, 0.92f);
+        }
+        glVertex3d(x, y, z);
+        glEnd();
+    }
 
     glPointSize(1.0f);
+    glLineWidth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
 }
@@ -778,7 +969,7 @@ static void draw_current_disk(const Frame *f)
     apply_quat_rotation(f->q);
     draw_disk_mesh(g_data.r, g_data.h, g_data.rho);
     draw_disk_arrows();
-    draw_strike_marker();
+    draw_strike_marker(f);
 
     glPopMatrix();
 
@@ -1095,7 +1286,7 @@ int main(int argc, char **argv)
     }
 
     g_time = g_data.frames[0].t;
-    if (g_data.strike_mode && g_data.strike_point_valid) {
+    if (g_data.strike_mode && g_data.strike_point_count > 0) {
         g_playing = 0;
     }
     reset_camera();

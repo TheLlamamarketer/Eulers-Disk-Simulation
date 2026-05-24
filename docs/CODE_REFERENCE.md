@@ -25,12 +25,12 @@ The viewer is C/OpenGL. The physics simulation is Fortran.
 | File | Responsibility |
 | --- | --- |
 | `model2/main.f90` | Program entry point. Calls `input`, `integ`, then `post`. |
-| `model2/input.f90` | Reads interactive or preset inputs. Owns disk geometry, friction parameters, manual launch inputs, and pendulum strike inputs. |
+| `model2/input.f90` | Reads interactive or preset inputs. Owns disk geometry, friction parameters, manual launch inputs, and pendulum/double-pendulum strike inputs. |
 | `model2/disk_data.f90` | Shared constants, state, filenames, disk geometry, derived mass, resistance lengths, and strike diagnostics. |
 | `model2/prop.f` | Computes disk radii of gyration from geometry. |
 | `model2/disk.f90` | Adapter passed to the ODE solver. |
 | `model2/disk0.f90` | Core equations for rolling/sliding disk dynamics and contact forces. |
-| `model2/integ.f90` | Opens output files, writes the report header, configures DOPRI/DOP853, runs integration, and handles mode restarts. |
+| `model2/integ.f90` | Opens output files, writes the report header, configures DOP853, runs integration, and handles mode restarts. |
 | `model2/solout.f90` | Dense-output callback. Writes sampled state rows and detects stop or rolling/sliding events. |
 | `model2/ztime.f90` | Event-time polynomial used by `solout.f90`. |
 | `model2/post.f90` | Converts `result.txt` into `animat.txt`. |
@@ -64,7 +64,7 @@ but ordinary physics changes should usually happen in `model2/`.
 
 `edisk_gl_viewer.c` reads `animat.txt`. If a `report.txt` exists next to the
 animation file, the viewer also reads it for extra run metadata such as
-pendulum-strike diagnostics.
+single- or double-pendulum strike diagnostics.
 
 The viewer renders a rounded disk mesh with OpenGL depth testing. It interpolates
 animation frames by simulation time and uses quaternion interpolation for disk

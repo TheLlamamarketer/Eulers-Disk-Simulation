@@ -1,0 +1,382 @@
+  Euler's Disk Simulation 
+  M.Batista/UL FPP  Version 0.04
+    Date: 17/05/2026
+    Time: 00:49:05    
+    ---------------------------------
+    Disk radius             [m]      0.0500
+    Disk height             [m]      0.0100
+    Disk half height        [m]      0.0050
+    Disk filet radius       [m]      0.0030
+    Disk volume             [m^3]   0.773E-04
+    Disk density          [kg/m3]     7792.00
+    Inertial moments X/Z    [m^2]  .624E-03
+    Inertial moment Y       [m^2]  .123E-02
+    Disk mass               [kg]     0.6027
+    Static friction         [-]       0.450
+    Kinetics friction       [-]      0.2500
+    Rolling friction X/R    [-]    .180E-03
+    Rolling friction y/R    [-]    .650E-03
+    Boring  friction z/R    [-]    .800E-03
+    Rolling friction X-dir  [m]    .900E-05
+    Rolling friction y-dir  [m]    .325E-04
+    Boring  friction        [m]    .400E-04
+    Initial Psi             [rad]    0.0000
+    Initial Theta           [rad]    0.0000
+    Initial Phi             [rad]    0.0000
+    Initial OmegaX          [r/s]    0.0000
+    Initial OmegaY          [r/s]   23.2313
+    Initial OmegaZ          [r/s]   -4.5854
+    Initial XC              [m]      0.0000
+    Initial YC              [m]      0.0000
+    Initial VXC             [m/s]    0.0000
+    Initial VYC             [m/s]    0.0000
+    Initial contact slip    [m/s]    1.1616
+    Initial transl. energy  [J]     0.370E-33
+    Initial rot. energy     [J]     0.204E+00
+    Initial potential energy[J]     0.296E+00
+    Initial total energy    [J]     0.500E+00
+    Energy stop excess      [J]     0.300E-03
+    Initial condition mode: double pendulum strike
+    Pendulum mass          [kg]     0.4000
+    Pendulum length        [m]      0.8000
+    Release angle          [rad]    0.4363
+    Restitution coeff      [-]      0.2000
+    Impact efficiency      [-]      0.9000
+    Strike direction       [rad]    0.0000
+    Strike surface mode              1
+    Post-impact velocity mode        0
+    Strike point body [m]            0.0000     0.0050     0.0500
+    Pendulum speed         [m/s]    1.2125
+    Impact impulse         [Ns]    0.172E+00
+    Pendulum 2 mass        [kg]     0.4000
+    Pendulum 2 length      [m]      0.8000
+    Release 2 angle        [rad]    0.4363
+    Restitution 2 coeff    [-]      0.2000
+    Impact 2 efficiency    [-]      0.9000
+    Strike 2 direction     [rad]    3.1416
+    Strike 2 surface mode            2
+    Strike point 2 body [m]         -0.0000    -0.0050    -0.0500
+    Pendulum 2 speed       [m/s]    1.2125
+    Impact 2 impulse       [Ns]    0.172E+00
+    Strike torque wobble/axis [-]    0.1000
+    Initial omega wobble/axis [-]    0.1974
+    Launch note: axis-spin-dominant impulse.
+    Initial motion                        2
+
+  dopri data
+    precision             high
+    start time              0.000
+    end   time             50.000
+    print time              0.005
+    relative tolerance  0.100E-06
+    absolute tolerance  0.100E-06
+ EXIT OF DOP853 AT X=        0.3751E+00
+    time                0.375
+
+    status code                 2
+
+    number of outputs          77
+    fcn                      3401
+    step                      253
+    accept                    154
+    reject                     86
+    change mode at   0.375   mode=rolling
+ EXIT OF DOP853 AT X=        0.5669E+00
+    time                0.567
+
+    status code                 2
+
+    number of outputs         113
+    fcn                       681
+    step                       53
+    accept                     24
+    reject                     27
+    change mode at   0.558   mode=sliding
+ EXIT OF DOP853 AT X=        0.4845E+01
+    time                4.845
+
+    status code                 2
+
+    number of outputs         971
+    fcn                     62300
+    step                     4498
+    accept                   3205
+    reject                   1288
+    change mode at   4.845   mode=rolling
+ EXIT OF DOP853 AT X=        0.4851E+01
+    time                4.851
+
+    status code                 2
+
+    number of outputs         971
+    fcn                        84
+    step                        6
+    accept                      4
+    reject                      0
+    change mode at   4.850   mode=sliding
+ EXIT OF DOP853 AT X=        0.5760E+01
+    time                5.760
+
+    status code                 2
+
+    number of outputs        1154
+    fcn                     17272
+    step                     1238
+    accept                    913
+    reject                    320
+    change mode at   5.760   mode=rolling
+ EXIT OF DOP853 AT X=        0.5765E+01
+    time                5.765
+
+    status code                 2
+
+    number of outputs        1154
+    fcn                        84
+    step                        6
+    accept                      4
+    reject                      0
+    change mode at   5.765   mode=sliding
+ EXIT OF DOP853 AT X=        0.6080E+01
+    time                6.080
+
+    status code                 2
+
+    number of outputs        1218
+    fcn                      6125
+    step                      441
+    accept                    318
+    reject                    118
+    change mode at   6.080   mode=rolling
+ EXIT OF DOP853 AT X=        0.6087E+01
+    time                6.087
+
+    status code                 2
+
+    number of outputs        1218
+    fcn                        99
+    step                        7
+    accept                      5
+    reject                      0
+    change mode at   6.085   mode=sliding
+ EXIT OF DOP853 AT X=        0.7620E+01
+    time                7.620
+
+    status code                 2
+
+    number of outputs        1526
+    fcn                     31538
+    step                     2272
+    accept                   1636
+    reject                    631
+    change mode at   7.619   mode=rolling
+ EXIT OF DOP853 AT X=        0.7627E+01
+    time                7.627
+
+    status code                 2
+
+    number of outputs        1526
+    fcn                       129
+    step                        9
+    accept                      7
+    reject                      0
+    change mode at   7.625   mode=sliding
+ EXIT OF DOP853 AT X=        0.7880E+01
+    time                7.880
+
+    status code                 2
+
+    number of outputs        1578
+    fcn                      5311
+    step                      383
+    accept                    274
+    reject                    105
+    change mode at   7.880   mode=rolling
+ EXIT OF DOP853 AT X=        0.7886E+01
+    time                7.886
+
+    status code                 2
+
+    number of outputs        1578
+    fcn                       114
+    step                        8
+    accept                      6
+    reject                      0
+    change mode at   7.885   mode=sliding
+ EXIT OF DOP853 AT X=        0.8050E+01
+    time                8.050
+
+    status code                 2
+
+    number of outputs        1612
+    fcn                      3418
+    step                      248
+    accept                    172
+    reject                     72
+    change mode at   8.050   mode=rolling
+ EXIT OF DOP853 AT X=        0.8055E+01
+    time                8.055
+
+    status code                 2
+
+    number of outputs        1612
+    fcn                       114
+    step                        8
+    accept                      6
+    reject                      0
+    change mode at   8.055   mode=sliding
+ EXIT OF DOP853 AT X=        0.9380E+01
+    time                9.380
+
+    status code                 2
+
+    number of outputs        1878
+    fcn                     30245
+    step                     2197
+    accept                   1519
+    reject                    674
+    change mode at   9.380   mode=rolling
+ EXIT OF DOP853 AT X=        0.9385E+01
+    time                9.385
+
+    status code                 2
+
+    number of outputs        1878
+    fcn                       129
+    step                        9
+    accept                      7
+    reject                      0
+    change mode at   9.385   mode=sliding
+ EXIT OF DOP853 AT X=        0.9595E+01
+    time                9.595
+
+    status code                 2
+
+    number of outputs        1921
+    fcn                      4878
+    step                      356
+    accept                    240
+    reject                    112
+    change mode at   9.595   mode=rolling
+ EXIT OF DOP853 AT X=        0.9602E+01
+    time                9.602
+
+    status code                 2
+
+    number of outputs        1921
+    fcn                       144
+    step                       10
+    accept                      8
+    reject                      0
+    change mode at   9.600   mode=sliding
+ EXIT OF DOP853 AT X=        0.9756E+01
+    time                9.756
+
+    status code                 2
+
+    number of outputs        1953
+    fcn                      3443
+    step                      251
+    accept                    170
+    reject                     77
+    change mode at   9.755   mode=rolling
+ EXIT OF DOP853 AT X=        0.9768E+01
+    time                9.768
+
+    status code                 2
+
+    number of outputs        1953
+    fcn                        39
+    step                        3
+    accept                      1
+    reject                      0
+    change mode at   9.760   mode=sliding
+ EXIT OF DOP853 AT X=        0.1092E+02
+    time               10.921
+
+    status code                 2
+
+    number of outputs        2186
+    fcn                     28509
+    step                     2073
+    accept                   1426
+    reject                    643
+    change mode at  10.920   mode=rolling
+ EXIT OF DOP853 AT X=        0.1093E+02
+    time               10.929
+
+    status code                 2
+
+    number of outputs        2186
+    fcn                        50
+    step                        4
+    accept                      1
+    reject                      0
+    change mode at  10.925   mode=sliding
+ EXIT OF DOP853 AT X=        0.1145E+02
+    time               11.445
+
+    status code                 2
+
+    number of outputs        2291
+    fcn                     13498
+    step                      984
+    accept                    668
+    reject                    312
+    change mode at  11.445   mode=rolling
+ EXIT OF DOP853 AT X=        0.1146E+02
+    time               11.459
+
+    status code                 2
+
+    number of outputs        2292
+    fcn                        76
+    step                        6
+    accept                      2
+    reject                      1
+    change mode at  11.450   mode=sliding
+ EXIT OF DOP853 AT X=        0.1210E+02
+    time               12.096
+
+    status code                 2
+
+    number of outputs        2421
+    fcn                     17354
+    step                     1268
+    accept                    851
+    reject                    413
+    change mode at  12.095   mode=rolling
+ EXIT OF DOP853 AT X=        0.1211E+02
+    time               12.107
+
+    status code                 2
+
+    number of outputs        2422
+    fcn                        87
+    step                        7
+    accept                      2
+    reject                      2
+    change mode at  12.100   mode=sliding
+ EXIT OF DOP853 AT X=        0.1260E+02
+    time               12.596
+
+    status code                 2
+
+    number of outputs        2521
+    fcn                     14165
+    step                     1037
+    accept                    689
+    reject                    344
+    change mode at  12.595   mode=rolling
+ EXIT OF DOP853 AT X=        0.1261E+02
+    time               12.607
+
+    status code                 2
+
+    number of outputs        2522
+    fcn                        76
+    step                        6
+    accept                      2
+    reject                      2
+    change mode at  12.600   mode=sliding
+ EXIT OF DOP853 AT X=        0.1279E+02
+    time               12.785

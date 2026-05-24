@@ -112,14 +112,18 @@
       phi0   = phi_deg*PI/180.0_8
 !
       icmode = 0
-      call get_number('Initial condition mode [0=manual,1=strike]', &
-      &  icmode, fmt='i4', minv=0, maxv=1, stat=ier)
+      call get_number('Initial condition mode [0=manual,1=strike,2=double]', &
+      &  icmode, fmt='i4', minv=0, maxv=2, stat=ier)
       if (ier /= 0) goto 999
 !
       if (icmode == 1) then
          call strike_initial_condition(ier)
          if (ier /= 0) goto 999
+      else if (icmode == 2) then
+         call double_strike_initial_condition(ier)
+         if (ier /= 0) goto 999
       else
+      strike_count = 0
       call get_number('Initial Omega1 [rad/s]', omega10,   stat = ier)
       if (ier /= 0) goto 999
       call get_number('Initial Omega2 [rad/s]', omega20,  stat = ier)
@@ -156,13 +160,7 @@
       if (ier /= 0) goto 999
 
       prec = HIGH
-      call get_number('Integration precision [0,1]',prec,fmt='i4',minv=0,maxv=1,stat=ier)
-      if (ier /= 0) goto 999
-      if (prec == LOW) then
-         reltol = 1.0e-5_8
-      else
-         reltol= 1.0e-6_8
-      endif
+      reltol= 1.0e-6_8
       call get_number('RelTol          ', reltol,   stat = ier)
       if (ier /= 0) goto 999
       abstol = reltol
@@ -193,9 +191,7 @@
 !
       integer, intent(out) :: ier
 !
-      real(8) :: nxw, nyw, nzw, nx1, ny1, nz1, nx2, ny2, nz2
-      real(8) :: tx, ty, tz, ax, ay, az, bx, by, bz
-      real(8) :: denom, vwx, vwy, cpsi, spsi, cth, sth
+      real(8) :: tx, ty, tz, vwx, vwy
       real(8) :: radial2
       real(8) :: direction_deg, pend_mass, pend_length, release_angle
       real(8) :: release_angle_deg, surface_angle_deg
@@ -291,6 +287,279 @@
       strike_direction   = direction
       strike_surface     = surface
       strike_velocity_mode = velocity_mode
+      strike_count       = 1
+      strike2_mass       = ZERO
+      strike2_length     = ZERO
+      strike2_release    = ZERO
+      strike2_restitution = ZERO
+      strike2_efficiency = ONE
+      strike2_direction  = ZERO
+      strike2_point      = (/ZERO, ZERO, ZERO/)
+      strike2_surface    = 0
+      strike2_speed      = ZERO
+      strike2_impulse    = ZERO
+!
+      call strike_impulse_components(pend_mass, pend_length, &
+     &   release_angle, restitution, efficiency, direction, strike_point, &
+     &   strike_impulse, strike_speed, omega10, omega20, omega30, &
+     &   vwx, vwy, tx, ty, tz, ier)
+      if (ier /= 0) return
+      strike_torque_tip_spin = sqrt(tx*tx + tz*tz) / &
+     &   (abs(ty) + 1.0e-30_8)
+      strike_omega_tip_spin = sqrt(omega10*omega10 + omega30*omega30) / &
+     &   (abs(omega20) + 1.0e-30_8)
+!
+      if (velocity_mode == 0) then
+         vcx0 = vwx
+         vcy0 = vwy
+      else if (velocity_mode == 1) then
+         vcx0 = ZERO
+         vcy0 = ZERO
+      else
+         call strike_contact_geometry(theta0, hp0, rp0, zp0)
+         vcx0 = rp0*omega20 - hp0*omega30
+         vcy0 = zp0*omega10
+      endif
+      vcz0 = ZERO
+!
+      end subroutine strike_initial_condition
+
+      subroutine double_strike_initial_condition(ier)
+!
+!  Purpose---
+!     Compute initial velocities from two simple pendulum strikes.
+!
+      use disk_data
+      use mui, only: get_number, set_string
+!
+      implicit none
+!
+      integer, intent(out) :: ier
+!
+      real(8) :: direction_deg, direction2_deg
+      real(8) :: pend_mass, pend_length, release_angle
+      real(8) :: pend2_mass, pend2_length, release2_angle
+      real(8) :: release_angle_deg, release2_angle_deg
+      real(8) :: restitution, restitution2
+      real(8) :: efficiency, efficiency2
+      real(8) :: direction, direction2
+      real(8) :: surface_angle, surface2_angle, surface_axis, surface_radius
+      real(8) :: surface_angle_deg, surface2_angle_deg, radial2
+      real(8) :: hp0, rp0, zp0
+      real(8) :: domega11, domega21, domega31
+      real(8) :: domega12, domega22, domega32
+      real(8) :: dvx1, dvy1, dvx2, dvy2
+      real(8) :: torque11, torque21, torque31
+      real(8) :: torque12, torque22, torque32
+      integer :: surface, surface2, velocity_mode
+!
+      ier = 0
+!
+      pend_mass     = max(0.01_8, strike_mass)
+      pend_length   = max(0.10_8, strike_length)
+      release_angle = strike_release
+      restitution   = strike_restitution
+      efficiency    = strike_efficiency
+      direction     = strike_direction
+      surface        = strike_surface
+      velocity_mode  = strike_velocity_mode
+      if (strike_point(1) == ZERO .and. strike_point(2) == ZERO .and. &
+     &   strike_point(3) == ZERO) then
+         strike_point(1) = r
+         strike_point(2) = ZERO
+         strike_point(3) = ZERO
+      endif
+      surface_angle = ZERO
+      radial2 = strike_point(1)**2 + strike_point(3)**2
+      if (radial2 > ZERO) surface_angle = atan2(strike_point(3), strike_point(1))
+      surface_axis = max(-hh, min(hh, strike_point(2)))
+      surface_radius = min(r, sqrt(max(ZERO, radial2)))
+      if (surface_radius == ZERO) surface_radius = r
+      release_angle_deg = release_angle*180.0_8/PI
+      direction_deg = direction*180.0_8/PI
+      surface_angle_deg = surface_angle*180.0_8/PI
+!
+      call get_number('Pendulum 1 mass [kg]', pend_mass, minv=1.0e-6_8, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 1 length [m]', pend_length, minv=1.0e-6_8, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 1 release angle [deg]', release_angle_deg, &
+     &   minv=ZERO, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 1 restitution coeff [0,1]', restitution, &
+     &   minv=ZERO, maxv=ONE, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 1 impact efficiency [0,1]', efficiency, &
+     &   minv=ZERO, maxv=ONE, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 1 direction angle [deg]', direction_deg, stat=ier)
+      if (ier /= 0) return
+      release_angle = release_angle_deg*PI/180.0_8
+      direction = direction_deg*PI/180.0_8
+!
+      call get_number('Strike surface [0=rim,1=+face,2=-face]', surface, &
+     &   fmt='i4', minv=0, maxv=2, stat=ier)
+      if (ier /= 0) return
+      if (surface == 0) then
+         call get_number('Strike rim angle [deg]', surface_angle_deg, stat=ier)
+         if (ier /= 0) return
+         call get_number('Strike rim axial offset [m]', surface_axis, &
+     &      minv=-hh, maxv=hh, stat=ier)
+         if (ier /= 0) return
+         surface_angle = surface_angle_deg*PI/180.0_8
+         strike_point(1) = r*cos(surface_angle)
+         strike_point(2) = surface_axis
+         strike_point(3) = r*sin(surface_angle)
+      else
+         call get_number('Strike face radius [m]', surface_radius, &
+     &      minv=ZERO, maxv=r, stat=ier)
+         if (ier /= 0) return
+         call get_number('Strike face angle [deg]', surface_angle_deg, stat=ier)
+         if (ier /= 0) return
+         surface_angle = surface_angle_deg*PI/180.0_8
+         strike_point(1) = surface_radius*cos(surface_angle)
+         if (surface == 1) then
+            strike_point(2) = hh
+         else
+            strike_point(2) = -hh
+         endif
+         strike_point(3) = surface_radius*sin(surface_angle)
+      endif
+      surface2_angle_deg = 180.0_8 - surface_angle_deg
+      call get_number('Post-impact center velocity [0=free,1=supported,2=rolling]', &
+     &   velocity_mode, fmt='i4', minv=0, maxv=2, stat=ier)
+      if (ier /= 0) return
+!
+      pend2_mass = pend_mass
+      pend2_length = pend_length
+      release2_angle_deg = release_angle_deg
+      restitution2 = restitution
+      efficiency2 = efficiency
+      direction2_deg = direction_deg + 180.0_8
+!
+      call get_number('Pendulum 2 mass [kg]', pend2_mass, minv=1.0e-6_8, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 2 length [m]', pend2_length, minv=1.0e-6_8, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 2 release angle [deg]', release2_angle_deg, &
+     &   minv=ZERO, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 2 restitution coeff [0,1]', restitution2, &
+     &   minv=ZERO, maxv=ONE, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 2 impact efficiency [0,1]', efficiency2, &
+     &   minv=ZERO, maxv=ONE, stat=ier)
+      if (ier /= 0) return
+      call get_number('Pendulum 2 direction angle [deg]', direction2_deg, stat=ier)
+      if (ier /= 0) return
+      call get_number('Strike 2 disk angle [deg]', surface2_angle_deg, stat=ier)
+      if (ier /= 0) return
+      release2_angle = release2_angle_deg*PI/180.0_8
+      direction2 = direction2_deg*PI/180.0_8
+      surface2_angle = surface2_angle_deg*PI/180.0_8
+!
+      radial2 = strike_point(1)**2 + strike_point(3)**2
+      if (radial2 > r**2) then
+         call set_string(1,'*** Strike point is outside the disk radius.')
+         ier = -1
+         return
+      endif
+!
+      if (surface == 0) then
+         strike2_point(1) = r*cos(surface2_angle)
+         strike2_point(2) = surface_axis
+         strike2_point(3) = r*sin(surface2_angle)
+         surface2 = 0
+      else if (surface == 1) then
+         strike2_point(1) = surface_radius*cos(surface2_angle)
+         strike2_point(2) = -hh
+         strike2_point(3) = surface_radius*sin(surface2_angle)
+         surface2 = 2
+      else
+         strike2_point(1) = surface_radius*cos(surface2_angle)
+         strike2_point(2) = hh
+         strike2_point(3) = surface_radius*sin(surface2_angle)
+         surface2 = 1
+      endif
+!
+      strike_count       = 2
+      strike_mass        = pend_mass
+      strike_length      = pend_length
+      strike_release     = release_angle
+      strike_restitution = restitution
+      strike_efficiency  = efficiency
+      strike_direction   = direction
+      strike_surface     = surface
+      strike_velocity_mode = velocity_mode
+      strike2_mass        = pend2_mass
+      strike2_length      = pend2_length
+      strike2_release     = release2_angle
+      strike2_restitution = restitution2
+      strike2_efficiency  = efficiency2
+      strike2_direction   = direction2
+      strike2_surface     = surface2
+!
+      call strike_impulse_components(pend_mass, pend_length, &
+     &   release_angle, restitution, efficiency, direction, strike_point, &
+     &   strike_impulse, strike_speed, domega11, domega21, domega31, &
+     &   dvx1, dvy1, torque11, torque21, torque31, ier)
+      if (ier /= 0) return
+      call strike_impulse_components(pend2_mass, pend2_length, &
+     &   release2_angle, restitution2, efficiency2, direction2, strike2_point, &
+     &   strike2_impulse, strike2_speed, domega12, domega22, domega32, &
+     &   dvx2, dvy2, torque12, torque22, torque32, ier)
+      if (ier /= 0) return
+!
+      omega10 = domega11 + domega12
+      omega20 = domega21 + domega22
+      omega30 = domega31 + domega32
+      strike_torque_tip_spin = &
+     &   sqrt((torque11 + torque12)**2 + (torque31 + torque32)**2) / &
+     &   (abs(torque21 + torque22) + 1.0e-30_8)
+      strike_omega_tip_spin = sqrt(omega10*omega10 + omega30*omega30) / &
+     &   (abs(omega20) + 1.0e-30_8)
+!
+      if (velocity_mode == 0) then
+         vcx0 = dvx1 + dvx2
+         vcy0 = dvy1 + dvy2
+      else if (velocity_mode == 1) then
+         vcx0 = ZERO
+         vcy0 = ZERO
+      else
+         call strike_contact_geometry(theta0, hp0, rp0, zp0)
+         vcx0 = rp0*omega20 - hp0*omega30
+         vcy0 = zp0*omega10
+      endif
+      vcz0 = ZERO
+!
+      end subroutine double_strike_initial_condition
+
+      subroutine strike_impulse_components(pend_mass, pend_length, &
+     &   release_angle, restitution, efficiency, direction, point, &
+     &   impulse, speed, domega1, domega2, domega3, dvx, dvy, &
+     &   torque1, torque2, torque3, ier)
+!
+!  Purpose---
+!     Convert one pendulum strike into disk velocity increments.
+!
+      use disk_data
+      use mui, only: set_string
+!
+      implicit none
+!
+      real(8), intent(in) :: pend_mass, pend_length, release_angle
+      real(8), intent(in) :: restitution, efficiency, direction
+      real(8), intent(in) :: point(3)
+      real(8), intent(out) :: impulse, speed
+      real(8), intent(out) :: domega1, domega2, domega3
+      real(8), intent(out) :: dvx, dvy, torque1, torque2, torque3
+      integer, intent(out) :: ier
+!
+      real(8) :: nxw, nyw, nzw, nx1, ny1, nz1, nx2, ny2, nz2
+      real(8) :: tx, ty, tz, ax, ay, az, bx, by, bz
+      real(8) :: denom, vwx, vwy, cpsi, spsi, cth, sth
+!
+      ier = 0
 !
 !     Strike direction is horizontal in the world frame.
 !
@@ -316,9 +585,9 @@
 !
 !     Angular impulse direction: tau = r_contact x n.
 !
-      tx = strike_point(2)*nz2 - strike_point(3)*ny2
-      ty = strike_point(3)*nx2 - strike_point(1)*nz2
-      tz = strike_point(1)*ny2 - strike_point(2)*nx2
+      tx = point(2)*nz2 - point(3)*ny2
+      ty = point(3)*nx2 - point(1)*nz2
+      tz = point(1)*ny2 - point(2)*nx2
 !
 !     Effective mass denominator for a rigid impact against a rotating body.
 !
@@ -326,9 +595,9 @@
       ay = ty/(xmass*xk22)
       az = tz/(xmass*xk12)
 !
-      bx = ay*strike_point(3) - az*strike_point(2)
-      by = az*strike_point(1) - ax*strike_point(3)
-      bz = ax*strike_point(2) - ay*strike_point(1)
+      bx = ay*point(3) - az*point(2)
+      by = az*point(1) - ax*point(3)
+      bz = ax*point(2) - ay*point(1)
 !
       denom = ONE/pend_mass + ONE/xmass + nx2*bx + ny2*by + nz2*bz
       if (denom <= ZERO) then
@@ -337,34 +606,22 @@
          return
       endif
 !
-      strike_speed = sqrt(max(ZERO, &
-     &   2.0_8*g*pend_length*(ONE - cos(release_angle))))
-      strike_impulse = efficiency*(ONE + restitution)*strike_speed/denom
+      speed = sqrt(max(ZERO, 2.0_8*g*pend_length*(ONE - cos(release_angle))))
+      impulse = efficiency*(ONE + restitution)*speed/denom
 !
-!     This first version assumes the disk starts from rest before impact.
+      domega1 = impulse*tx/(xmass*xk12)
+      domega2 = impulse*ty/(xmass*xk22)
+      domega3 = impulse*tz/(xmass*xk12)
+      torque1 = impulse*tx
+      torque2 = impulse*ty
+      torque3 = impulse*tz
 !
-      omega10 = strike_impulse*tx/(xmass*xk12)
-      omega20 = strike_impulse*ty/(xmass*xk22)
-      omega30 = strike_impulse*tz/(xmass*xk12)
-      strike_torque_tip_spin = abs(tx)/(abs(tz) + 1.0e-30_8)
-      strike_omega_tip_spin = abs(omega10)/(abs(omega30) + 1.0e-30_8)
+      vwx = impulse*nxw/xmass
+      vwy = impulse*nyw/xmass
+      dvx =  cpsi*vwx + spsi*vwy
+      dvy = -spsi*vwx + cpsi*vwy
 !
-      if (velocity_mode == 0) then
-         vwx  = strike_impulse*nxw/xmass
-         vwy  = strike_impulse*nyw/xmass
-         vcx0 =  cpsi*vwx + spsi*vwy
-         vcy0 = -spsi*vwx + cpsi*vwy
-      else if (velocity_mode == 1) then
-         vcx0 = ZERO
-         vcy0 = ZERO
-      else
-         call strike_contact_geometry(theta0, hp0, rp0, zp0)
-         vcx0 = rp0*omega20 - hp0*omega30
-         vcy0 = zp0*omega10
-      endif
-      vcz0 = ZERO
-!
-      end subroutine strike_initial_condition
+      end subroutine strike_impulse_components
 
       subroutine strike_contact_geometry(theta_in, hp_out, rp_out, zp_out)
 !

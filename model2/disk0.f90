@@ -3,7 +3,8 @@
 !  Modules used---
       use disk_data, only: g, r, hh, rho, xk12, xk22, &
       &  xmus, xmud, xmurx, xmury, xmurz, &
-      &  mode, rolling, sliding, nout, theta_line_smooth
+      &  mode, rolling, sliding, nout, theta_line_smooth, &
+      &  slip_regularization
 !
       use cdata
       implicit none
@@ -26,7 +27,7 @@
       real(8), parameter :: hpi  = 1.5707963267948966192313216916398_8
 !
 !  Local scalars---
-      real(8) :: b1, b2, b3,  d
+      real(8) :: b1, b2, b3,  d, vp_eff
       real(8) :: abth, absi, dhmag, dsig, hmag, sig, u
 !
 !  Local arrays---
@@ -159,17 +160,10 @@
       b3 = g - omega1**2*dyp
 !
       if (mode == sliding) then
-         if (vp == zero) then
-            if (nout == 0) then
-               mode = rolling
-               return
-            endif
-            write(*,*) '***error in disk0: vp == zero in sliding mode'
-            stop
-         endif
+         vp_eff = sqrt(vp**2 + slip_regularization**2)
 !
-         xmux = -xmud*vpx/vp
-         xmuy = -xmud*vpy/vp
+         xmux = -xmud*vpx/vp_eff
+         xmuy = -xmud*vpy/vp_eff
 !
          d = xk12 + yp*(yp + xm1 - xmuy*zp)
          if (d == zero) then

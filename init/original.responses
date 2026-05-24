@@ -10,7 +10,7 @@
 57.29577951308232    # Initial X rotation theta [deg] = 1 rad
 0                    # Initial Y rotation phi [deg]
 
-0                    # Initial condition mode: 0=manual, 1=pendulum strike
+0                    # Initial condition mode: 0=manual, 1=pendulum strike, 2=double pendulum strike
 0                    # Initial Omega1 [rad/s]
 0                    # Initial Omega2 [rad/s]
 -14.456879949639     # Initial Omega3 [rad/s]
@@ -25,6 +25,5 @@
 
 30                   # End time [s]
 0.0005               # Print time step [s]
-1                    # Integration precision: 0=low, 1=high
 1e-7                 # Relative tolerance
 1e-7                 # Absolute tolerance

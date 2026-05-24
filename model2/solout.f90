@@ -85,7 +85,9 @@
       integer :: percent, filled, width
       real(8) :: xmu, ft, fn, alpha, a0, a1, a2, dd, ttt
       real(8) :: excess_energy, kinetic_energy, potential_energy
-      real(8) :: theta_stop
+      real(8) :: friction_margin, relock_margin, slip_lock_tol, theta_stop
+      real(8) :: save_vcx, save_vcy, save_vcz, roll_fn, roll_ft
+      logical :: can_relock
       logical :: binit = .false.
 !
 !  Local array---
@@ -282,8 +284,13 @@
                endif
          endif
 !
+!        Finite contacts do not switch exactly on an infinitely sharp
+!        Coulomb boundary.  Use a small coefficient-scale buffer so grazing
+!        stick/slip states do not chatter numerically.
+         friction_margin = max(1000.0_8*abstol, 5.0e-3_8) * &
+     &      max(abs(fn), one)
          if (mode == rolling) then
-            if (fff(kend) > zero) then
+            if (fff(kend) > friction_margin) then
 !
 !              Transition rolling -> sliding
 !
@@ -308,31 +315,48 @@
                endif
             endif
          else if (mode == sliding) then
-            if (vp < abstol) then
-!
+             slip_lock_tol = max(1000.0_8*abstol, 1.0e-4_8)
+             if (vp < slip_lock_tol) then
+               save_vcx = vcx
+               save_vcy = vcy
+               save_vcz = vcz
+               mode = rolling
+               call disk0
+               roll_fn = fz
+               roll_ft = sqrt(fx**2 + fy**2)
+               relock_margin = friction_margin
+               can_relock = roll_fn > zero .and. &
+     &            roll_ft <= xmus*roll_fn - relock_margin
+               mode = sliding
+               vcx = save_vcx
+               vcy = save_vcy
+               vcz = save_vcz
+               call disk0
+               if (can_relock) then
 !              Transition sliding -> rolling
 !
 !
-!              Calculate transition time
+!                 Calculate transition time
 !
-               j1 = kstart
-               j2 = j1 + 1
-               if (j2 > ksize) j2 = 1
-               j3 = kend
+                  j1 = kstart
+                  j2 = j1 + 1
+                  if (j2 > ksize) j2 = 1
+                  j3 = kend
 !
-               p(0) = vvv(j2)
-               p(1) = (vvv(j3) - vvv(j1))/(2.0_8*tprint)
-               p(2) = (vvv(j3) - 2.0_8*vvv(j2) + vvv(j1))/(2.0_8*tprint**2)
-               if (p(2) > zero) then
-                  ttt = -p(1)/(2.0_8*p(2))
-               else
-                  ttt = tprint
-               endif
-               ttt = max(zero, min(tprint, ttt))
+                  p(0) = vvv(j2)
+                  p(1) = (vvv(j3) - vvv(j1))/(2.0_8*tprint)
+                  p(2) = (vvv(j3) - 2.0_8*vvv(j2) + vvv(j1))/(2.0_8*tprint**2)
+                  if (p(2) > zero) then
+                     ttt = -p(1)/(2.0_8*p(2))
+                  else
+                     ttt = tprint
+                  endif
+                  ttt = max(zero, min(tprint, ttt))
 !
-               if (p(0) + p(1)*ttt + p(2)*ttt**2 < abstol) then
-                  tstar = tout + ttt - tprint
-                  irtrn = -2
+                  if (p(0) + p(1)*ttt + p(2)*ttt**2 < slip_lock_tol) then
+                     tstar = tout + ttt - tprint
+                     irtrn = -2
+                  endif
                endif
             endif
          endif

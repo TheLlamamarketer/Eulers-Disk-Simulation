@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1338" height="284" viewBox="0 0 1338 284">
+<style>
+text{font-family:Segoe UI,Arial,sans-serif;font-size:12px;fill:#222}
+.title{font-size:18px;font-weight:600}
+.axis{stroke:#333;stroke-width:1}
+.grid{stroke:#d0d0d0;stroke-width:1}
+.minor{stroke:#eeeeee;stroke-width:1}
+.rowlabel{font-variant-numeric:tabular-nums}
+</style>
+<rect x="0" y="0" width="1338" height="284" fill="#ffffff"/>
+<text x="86" y="28" class="title">Strike-angle time map</text>
+<text x="86" y="47">x = simulation time, y = pendulum 1 strike angle; pendulum 2 uses angle + 180 deg</text>
+<line x1="86.00" y1="58" x2="86.00" y2="212" class="minor"/>
+<text x="86.00" y="234" text-anchor="middle">0</text>
+<line x1="194.00" y1="58" x2="194.00" y2="212" class="minor"/>
+<text x="194.00" y="234" text-anchor="middle">10</text>
+<line x1="302.00" y1="58" x2="302.00" y2="212" class="minor"/>
+<text x="302.00" y="234" text-anchor="middle">20</text>
+<line x1="410.00" y1="58" x2="410.00" y2="212" class="minor"/>
+<text x="410.00" y="234" text-anchor="middle">30</text>
+<line x1="518.00" y1="58" x2="518.00" y2="212" class="minor"/>
+<text x="518.00" y="234" text-anchor="middle">40</text>
+<line x1="626.00" y1="58" x2="626.00" y2="212" class="minor"/>
+<text x="626.00" y="234" text-anchor="middle">50</text>
+<line x1="734.00" y1="58" x2="734.00" y2="212" class="minor"/>
+<text x="734.00" y="234" text-anchor="middle">60</text>
+<line x1="842.00" y1="58" x2="842.00" y2="212" class="minor"/>
+<text x="842.00" y="234" text-anchor="middle">70</text>
+<line x1="950.00" y1="58" x2="950.00" y2="212" class="minor"/>
+<text x="950.00" y="234" text-anchor="middle">80</text>
+<line x1="1058.00" y1="58" x2="1058.00" y2="212" class="minor"/>
+<text x="1058.00" y="234" text-anchor="middle">90</text>
+<line x1="1166.00" y1="58" x2="1166.00" y2="212" class="minor"/>
+<text x="1166.00" y="234" text-anchor="middle">100</text>
+<text x="626.00" y="264" text-anchor="middle">time [s]</text>
+<line x1="86" y1="58" x2="86" y2="212" class="axis"/>
+<line x1="86" y1="212" x2="1166" y2="212" class="axis"/>
+<rect x="86" y="58" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="58" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="58" width="162.54" height="20" fill="#59a14f"/>
+<rect x="261.50" y="58" width="318.60" height="20" fill="#4c78a8"/>
+<rect x="580.10" y="58" width="69.66" height="20" fill="#59a14f"/>
+<rect x="649.76" y="58" width="7.02" height="20" fill="#4c78a8"/>
+<rect x="656.78" y="58" width="58.32" height="20" fill="#59a14f"/>
+<rect x="715.10" y="58" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="718.88" y="58" width="49.68" height="20" fill="#59a14f"/>
+<rect x="86" y="58" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="72.52" text-anchor="end" class="rowlabel">1.25</text>
+<text x="1176" y="72.52" class="rowlabel">end 63.2s, status 0, wob 0.202</text>
+<rect x="86" y="80" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="80" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="80" width="160.38" height="20" fill="#59a14f"/>
+<rect x="259.34" y="80" width="320.22" height="20" fill="#4c78a8"/>
+<rect x="579.56" y="80" width="70.20" height="20" fill="#59a14f"/>
+<rect x="649.76" y="80" width="8.64" height="20" fill="#4c78a8"/>
+<rect x="658.40" y="80" width="58.86" height="20" fill="#59a14f"/>
+<rect x="717.26" y="80" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="721.04" y="80" width="48.60" height="20" fill="#59a14f"/>
+<rect x="769.64" y="80" width="11.34" height="20" fill="#4c78a8"/>
+<rect x="780.98" y="80" width="261.36" height="20" fill="#59a14f"/>
+<rect x="86" y="80" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="94.52" text-anchor="end" class="rowlabel">1.5</text>
+<text x="1176" y="94.52" class="rowlabel">end 88.5s, status 0, wob 0.204</text>
+<rect x="86" y="102" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="102" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="102" width="160.38" height="20" fill="#59a14f"/>
+<rect x="259.34" y="102" width="328.32" height="20" fill="#4c78a8"/>
+<rect x="587.66" y="102" width="68.58" height="20" fill="#59a14f"/>
+<rect x="656.24" y="102" width="8.64" height="20" fill="#4c78a8"/>
+<rect x="664.88" y="102" width="57.38" height="20" fill="#59a14f"/>
+<rect x="86" y="102" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="116.52" text-anchor="end" class="rowlabel">1.75</text>
+<text x="1176" y="116.52" class="rowlabel">end 58.9s, status 0, wob 0.206</text>
+<rect x="86" y="124" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="124" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="124" width="162.00" height="20" fill="#59a14f"/>
+<rect x="260.96" y="124" width="315.36" height="20" fill="#4c78a8"/>
+<rect x="576.32" y="124" width="70.20" height="20" fill="#59a14f"/>
+<rect x="646.52" y="124" width="8.10" height="20" fill="#4c78a8"/>
+<rect x="654.62" y="124" width="59.40" height="20" fill="#59a14f"/>
+<rect x="714.02" y="124" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="717.80" y="124" width="49.54" height="20" fill="#59a14f"/>
+<rect x="86" y="124" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="138.52" text-anchor="end" class="rowlabel">2</text>
+<text x="1176" y="138.52" class="rowlabel">end 63.1s, status -3, wob 0.209</text>
+<rect x="86" y="146" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="146" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="146" width="162.00" height="20" fill="#59a14f"/>
+<rect x="260.96" y="146" width="319.68" height="20" fill="#4c78a8"/>
+<rect x="580.64" y="146" width="69.66" height="20" fill="#59a14f"/>
+<rect x="650.30" y="146" width="7.02" height="20" fill="#4c78a8"/>
+<rect x="657.32" y="146" width="58.86" height="20" fill="#59a14f"/>
+<rect x="716.18" y="146" width="2.16" height="20" fill="#4c78a8"/>
+<rect x="718.34" y="146" width="51.84" height="20" fill="#59a14f"/>
+<rect x="770.18" y="146" width="1.08" height="20" fill="#4c78a8"/>
+<rect x="771.26" y="146" width="271.08" height="20" fill="#59a14f"/>
+<rect x="86" y="146" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="160.52" text-anchor="end" class="rowlabel">2.25</text>
+<text x="1176" y="160.52" class="rowlabel">end 88.5s, status 0, wob 0.212</text>
+<rect x="86" y="168" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="168" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="168" width="159.84" height="20" fill="#59a14f"/>
+<rect x="258.80" y="168" width="318.60" height="20" fill="#4c78a8"/>
+<rect x="577.40" y="168" width="70.20" height="20" fill="#59a14f"/>
+<rect x="647.60" y="168" width="7.02" height="20" fill="#4c78a8"/>
+<rect x="654.62" y="168" width="59.40" height="20" fill="#59a14f"/>
+<rect x="714.02" y="168" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="717.80" y="168" width="49.14" height="20" fill="#59a14f"/>
+<rect x="766.94" y="168" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="770.72" y="168" width="50.22" height="20" fill="#59a14f"/>
+<rect x="820.94" y="168" width="2.16" height="20" fill="#4c78a8"/>
+<rect x="823.10" y="168" width="232.20" height="20" fill="#59a14f"/>
+<rect x="86" y="168" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="182.52" text-anchor="end" class="rowlabel">2.5</text>
+<text x="1176" y="182.52" class="rowlabel">end 89.8s, status 0, wob 0.215</text>
+<rect x="86" y="190" width="1080" height="20" fill="#e0e0e0"/>
+<rect x="86.00" y="190" width="12.96" height="20" fill="#4c78a8"/>
+<rect x="98.96" y="190" width="163.62" height="20" fill="#59a14f"/>
+<rect x="262.58" y="190" width="309.42" height="20" fill="#4c78a8"/>
+<rect x="572.00" y="190" width="70.20" height="20" fill="#59a14f"/>
+<rect x="642.20" y="190" width="7.02" height="20" fill="#4c78a8"/>
+<rect x="649.22" y="190" width="59.40" height="20" fill="#59a14f"/>
+<rect x="708.62" y="190" width="3.78" height="20" fill="#4c78a8"/>
+<rect x="712.40" y="190" width="49.25" height="20" fill="#59a14f"/>
+<rect x="86" y="190" width="1080" height="20" fill="none" stroke="#e15759" stroke-width="1.5"/>
+<text x="76" y="204.52" text-anchor="end" class="rowlabel">2.75</text>
+<text x="1176" y="204.52" class="rowlabel">end 62.6s, status -3, wob 0.219</text>
+<text x="32" y="46">angle [deg]</text>
+<rect x="946" y="14" width="14" height="14" fill="#4c78a8" stroke="#777" stroke-width="0.5"/>
+<text x="965" y="26">sliding</text>
+<rect x="1032" y="14" width="14" height="14" fill="#59a14f" stroke="#777" stroke-width="0.5"/>
+<text x="1051" y="26">rolling</text>
+<rect x="1118" y="14" width="14" height="14" fill="#e0e0e0" stroke="#777" stroke-width="0.5"/>
+<text x="1137" y="26">stopped/ended</text>
+<text x="86" y="240">Best &gt;= realistic threshold: 2.5 deg, end 89.8s, wob 0.215</text>
+</svg>

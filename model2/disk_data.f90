@@ -64,7 +64,7 @@
       real(8), public :: tend
       real(8), public :: abstol 
       real(8), public :: reltol
-      integer, public :: prec = LOW
+      integer, public :: prec = HIGH
       real(4), public :: tcpus
       real(4), public :: tcpue
       real(8), public :: tstar
@@ -72,6 +72,7 @@
       real(8), public :: theta_line_smooth = 2.0e-2_8
       real(8), public :: theta_flat_stop_tol = 2.0e-4_8
       real(8), public :: energy_stop_tol = 3.0e-4_8
+      real(8), public :: slip_regularization = 1.0e-3_8
 !
       character(10), public :: cdate   ! curent date
       character(12), public :: ctime   ! current time
@@ -81,6 +82,7 @@
       real(8), public :: vcx0, vcy0, vcz0
       real(8), public :: omega10, omega20, omega30
 !
+      integer, public :: strike_count = 0
       real(8), public :: strike_mass = ZERO
       real(8), public :: strike_length = ZERO
       real(8), public :: strike_release = ZERO
@@ -92,6 +94,16 @@
       integer, public :: strike_velocity_mode = 1
       real(8), public :: strike_speed = ZERO
       real(8), public :: strike_impulse = ZERO
+      real(8), public :: strike2_mass = ZERO
+      real(8), public :: strike2_length = ZERO
+      real(8), public :: strike2_release = ZERO
+      real(8), public :: strike2_restitution = ZERO
+      real(8), public :: strike2_efficiency = ONE
+      real(8), public :: strike2_direction = ZERO
+      real(8), public :: strike2_point(3) = (/ZERO, ZERO, ZERO/)
+      integer, public :: strike2_surface = 0
+      real(8), public :: strike2_speed = ZERO
+      real(8), public :: strike2_impulse = ZERO
       real(8), public :: strike_torque_tip_spin = ZERO
       real(8), public :: strike_omega_tip_spin = ZERO
 !

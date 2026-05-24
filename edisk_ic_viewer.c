@@ -938,7 +938,7 @@ static void draw_overlay(void)
              psi_dot, phi_dot, omega_y, omega_z);
     draw_text_2d(12, g_height - 84, line);
     if (!g_ic.manual_omegas) {
-        draw_text_2d(12, g_height - 104, "Pendulum response: geometry/angles loaded, omegas left at zero because no solver/strike impulse was run.");
+        draw_text_2d(12, g_height - 104, "Strike response: geometry/angles loaded, omegas left at zero because no solver/strike impulse was run.");
     }
     draw_control_panel();
     snprintf(line, sizeof(line), "drag sliders/edit   left drag orbit   middle/right pan   wheel zoom   1/2/3 select omega%d   +/- adjust   a/o/r toggles   esc quit",
