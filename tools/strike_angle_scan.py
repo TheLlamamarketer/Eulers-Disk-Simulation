@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Plot a time-vs-strike-angle sweep for the double-pendulum launch.
+"""Scan strike direction for one fixed launch setup and plot the timeline.
 
-The map is meant for near-realistic strike-angle questions: keep the current
-preset physics, sweep the pendulum 1 direction angle, set pendulum 2 to
-angle+180, and draw how long each run stays alive and which contact mode it is
-in over time.
+The map is meant for near-realistic strike-angle questions: keep release theta,
+impact theta, radius, and face angle fixed; scan the pendulum 1 direction angle;
+set pendulum 2 to angle+180; and draw how long each run stays alive and which
+contact mode it is in over time.
 """
 
 from __future__ import annotations
@@ -22,15 +22,22 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
-from sweep_double_pendulum import (
+from launch_model import (
     BASE_PRESET,
     GENERATED,
+    IDX_END_TIME,
+    IDX_FACE_RADIUS,
+    IDX_IMPACT_ANGLE,
+    IDX_PRINT_STEP,
+    IDX_RELEASE_ANGLE,
     SIM,
     Candidate,
     parse_report,
+    parse_result,
     read_base_values,
     response_for,
     score_row,
+    simulator_stale_reason,
 )
 
 
@@ -83,67 +90,6 @@ def parse_timeseries(path: Path) -> list[dict[str, float | str]]:
     return samples
 
 
-def summarize_samples(
-    samples: list[dict[str, float | str]],
-    motion_ignore_time: float,
-) -> dict[str, float | str]:
-    if not samples:
-        return {
-            "theta_rms": math.nan,
-            "theta_max_abs": math.nan,
-            "theta_span": math.nan,
-            "mean_vs": math.nan,
-            "center_motion_samples": 0,
-            "center_mean_x_m": math.nan,
-            "center_mean_y_m": math.nan,
-            "center_orbit_mean_m": math.nan,
-            "center_orbit_rms_m": math.nan,
-            "center_orbit_max_m": math.nan,
-            "center_orbit_span_m": math.nan,
-            "center_drift_m": math.nan,
-            "center_path_length_m": math.nan,
-            "last_mode": "",
-        }
-
-    theta = [float(sample["theta"]) for sample in samples]
-    slip = [float(sample["slip"]) for sample in samples]
-    theta_path = sum(abs(theta[idx] - theta[idx - 1]) for idx in range(1, len(theta)))
-    theta_net = abs(theta[-1] - theta[0])
-    theta_excess = max(0.0, theta_path - theta_net)
-    theta_duration = max(1.0e-12, len(theta) - 1)
-    motion_samples = [sample for sample in samples if float(sample["time"]) >= motion_ignore_time]
-    if not motion_samples:
-        motion_samples = samples
-    center_x = [float(sample["center_x"]) for sample in motion_samples]
-    center_y = [float(sample["center_y"]) for sample in motion_samples]
-    mean_x = sum(center_x) / len(center_x)
-    mean_y = sum(center_y) / len(center_y)
-    radii = [math.hypot(x - mean_x, y - mean_y) for x, y in zip(center_x, center_y)]
-    path_length = sum(
-        math.hypot(center_x[idx] - center_x[idx - 1], center_y[idx] - center_y[idx - 1])
-        for idx in range(1, len(center_x))
-    )
-    drift = math.hypot(center_x[-1] - center_x[0], center_y[-1] - center_y[0])
-    return {
-        "theta_rms": math.sqrt(sum(value * value for value in theta) / len(theta)),
-        "theta_max_abs": max(abs(value) for value in theta),
-        "theta_span": max(theta) - min(theta),
-        "theta_excess_variation": theta_excess,
-        "theta_excess_rate": theta_excess / theta_duration,
-        "mean_vs": sum(slip) / len(slip),
-        "center_motion_samples": len(motion_samples),
-        "center_mean_x_m": mean_x,
-        "center_mean_y_m": mean_y,
-        "center_orbit_mean_m": sum(radii) / len(radii),
-        "center_orbit_rms_m": math.sqrt(sum(value * value for value in radii) / len(radii)),
-        "center_orbit_max_m": max(radii),
-        "center_orbit_span_m": max(radii) - min(radii),
-        "center_drift_m": drift,
-        "center_path_length_m": path_length,
-        "last_mode": str(samples[-1]["mode"]),
-    }
-
-
 def run_angle(
     base: list[float],
     candidate: Candidate,
@@ -153,13 +99,24 @@ def run_angle(
     motion_ignore_time: float,
 ) -> tuple[dict[str, float | int | str | bool], list[dict[str, float | str]]]:
     response = response_for(base, candidate, end_time, print_step)
+    GENERATED.mkdir(exist_ok=True)
+    (GENERATED / "last_strike_angle_candidate.responses").write_text(response, encoding="ascii")
+    root = BASE_PRESET.parents[1]
+    report_path = root / "report.txt"
+    result_path = root / "result.txt"
+    for output in (report_path, result_path):
+        try:
+            output.unlink()
+        except FileNotFoundError:
+            pass
+
     started = time.perf_counter()
     try:
         proc = subprocess.run(
             [str(SIM)],
             input=response,
             text=True,
-            cwd=BASE_PRESET.parents[1],
+            cwd=root,
             capture_output=True,
             timeout=timeout,
         )
@@ -169,8 +126,8 @@ def run_angle(
         timed_out = True
 
     row: dict[str, float | int | str | bool] = {
-        "mass": candidate.mass,
-        "release_deg": candidate.release_deg,
+        "release_angle_deg": candidate.release_angle_deg,
+        "impact_angle_deg": candidate.impact_angle_deg,
         "direction_deg": candidate.direction_deg,
         "direction2_deg": candidate.direction_deg + 180.0,
         "face_radius": candidate.face_radius,
@@ -194,13 +151,22 @@ def run_angle(
         return row, samples
 
     row["process_status"] = proc.returncode if proc is not None else -999
-    report_path = BASE_PRESET.parents[1] / "report.txt"
-    result_path = BASE_PRESET.parents[1] / "result.txt"
+    if not report_path.exists():
+        row.update({
+            "end_time": 0.0,
+            "exit_status": proc.returncode if proc is not None else -995,
+            "score": -1.0e9,
+            "output_missing": True,
+            "skip_reason": "simulator did not write report.txt",
+            "last_mode": "no-report",
+        })
+        return row, samples
+
     if report_path.exists():
         row.update(parse_report(report_path))
     if result_path.exists():
         samples = parse_timeseries(result_path)
-        row.update(summarize_samples(samples, motion_ignore_time))
+        row.update(parse_result(result_path, motion_ignore_time))
     row["score"] = score_row(row)
     return row, samples
 
@@ -397,33 +363,40 @@ def complete_key(end_time: float, row: dict[str, float | int | str | bool]) -> t
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--name", default="strike_angle")
-    parser.add_argument("--angles", default="")
-    parser.add_argument("--angle-min", type=float, default=-20.0)
-    parser.add_argument("--angle-max", type=float, default=0.0)
-    parser.add_argument("--angle-step", type=float, default=0.5)
-    parser.add_argument("--include-negative", action="store_true")
-    parser.add_argument("--end-time", type=float, default=None)
-    parser.add_argument("--print-step", type=float, default=0.001)
-    parser.add_argument("--timeout", type=float, default=20.0)
-    parser.add_argument("--min-realistic-angle", type=float, default=5.0)
-    parser.add_argument("--motion-ignore-time", type=float, default=2.0)
-    parser.add_argument("--mass", type=float, default=None)
-    parser.add_argument("--release", type=float, default=None)
-    parser.add_argument("--face-radius", type=float, default=None)
-    parser.add_argument("--write-best", action="store_true")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Scan strike direction for one fixed launch setup. Release theta and "
+            "impact theta stay fixed unless you override them."
+        )
+    )
+    parser.add_argument("--name", default="strike_angle", help="Output file stem under generated/.")
+    parser.add_argument("--angles", default="", help="Explicit comma-separated strike directions in degrees.")
+    parser.add_argument("--angle-min", type=float, default=-20.0, help="Minimum strike direction when --angles is omitted.")
+    parser.add_argument("--angle-max", type=float, default=0.0, help="Maximum strike direction when --angles is omitted.")
+    parser.add_argument("--angle-step", type=float, default=0.5, help="Strike-direction step when --angles is omitted.")
+    parser.add_argument("--include-negative", action="store_true", help="Mirror the generated angle range around zero.")
+    parser.add_argument("--end-time", type=float, default=None, help="Maximum simulated time. Defaults to the preset value.")
+    parser.add_argument("--print-step", type=float, default=0.001, help="Output sampling step passed to the simulator.")
+    parser.add_argument("--timeout", type=float, default=20.0, help="Wall-clock seconds before one run is killed.")
+    parser.add_argument("--min-realistic-angle", type=float, default=5.0, help="Reference threshold for marking near-grazing hits.")
+    parser.add_argument("--motion-ignore-time", type=float, default=2.0, help="Ignore early transient motion before summarizing wobble.")
+    parser.add_argument("--release-angle", type=float, default=None, help="Fixed rod release theta in degrees. Defaults to the preset.")
+    parser.add_argument("--impact-angle", type=float, default=None, help="Fixed rod impact theta in degrees. Defaults to the preset.")
+    parser.add_argument("--face-radius", type=float, default=None, help="Fixed face strike radius. Defaults to the preset.")
+    parser.add_argument("--write-best", action="store_true", help="Write the best strike-direction candidate to a response file.")
     args = parser.parse_args()
 
-    if not SIM.exists():
-        print(f"missing simulator: {SIM}")
+    stale_reason = simulator_stale_reason()
+    if stale_reason:
+        print(stale_reason)
+        print("Run `cmd /c run.bat --build-only` to rebuild it.")
         return 2
 
     base = read_base_values(BASE_PRESET)
-    end_time = float(args.end_time if args.end_time is not None else base[30])
-    mass = float(args.mass if args.mass is not None else base[8])
-    release = float(args.release if args.release is not None else base[10])
-    radius = float(args.face_radius if args.face_radius is not None else base[15])
+    end_time = float(args.end_time if args.end_time is not None else base[IDX_END_TIME])
+    release_angle = float(args.release_angle if args.release_angle is not None else base[IDX_RELEASE_ANGLE])
+    impact_angle = float(args.impact_angle if args.impact_angle is not None else base[IDX_IMPACT_ANGLE])
+    radius = float(args.face_radius if args.face_radius is not None else base[IDX_FACE_RADIUS])
     angles = build_angles(args)
 
     GENERATED.mkdir(exist_ok=True)
@@ -431,7 +404,12 @@ def main() -> int:
     traces: dict[float, list[dict[str, float | str]]] = {}
 
     for idx, angle in enumerate(angles, 1):
-        candidate = Candidate(mass=mass, release_deg=release, direction_deg=angle, face_radius=radius)
+        candidate = Candidate(
+            release_angle_deg=release_angle,
+            impact_angle_deg=impact_angle,
+            direction_deg=angle,
+            face_radius=radius,
+        )
         row, samples = run_angle(
             base,
             candidate,
@@ -481,19 +459,19 @@ def main() -> int:
 
     if args.write_best and best_realistic is not None:
         best_candidate = Candidate(
-            mass=float(best_realistic["mass"]),
-            release_deg=float(best_realistic["release_deg"]),
+            release_angle_deg=float(best_realistic["release_angle_deg"]),
+            impact_angle_deg=float(best_realistic["impact_angle_deg"]),
             direction_deg=float(best_realistic["direction_deg"]),
             face_radius=float(best_realistic["face_radius"]),
         )
-        best_response = response_for(base, best_candidate, end_time, float(base[31]))
+        best_response = response_for(base, best_candidate, end_time, float(base[IDX_PRINT_STEP]))
         best_path = GENERATED / "best_realistic_angle.responses"
         best_path.write_text(best_response, encoding="ascii")
         run_angle(
             base,
             best_candidate,
             end_time,
-            float(base[31]),
+            float(base[IDX_PRINT_STEP]),
             args.timeout,
             args.motion_ignore_time,
         )

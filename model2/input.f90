@@ -182,7 +182,7 @@
       subroutine strike_initial_condition(ier)
 !
 !  Purpose---
-!     Compute reproducible initial velocities from a simple pendulum strike.
+!     Compute reproducible initial velocities from a physical-pendulum strike.
 !
       use disk_data
       use mui, only: get_number, set_string
@@ -193,8 +193,8 @@
 !
       real(8) :: tx, ty, tz, vwx, vwy
       real(8) :: radial2
-      real(8) :: direction_deg, pend_mass, pend_length, release_angle
-      real(8) :: release_angle_deg, surface_angle_deg
+      real(8) :: direction_deg, release_angle, impact_angle
+      real(8) :: release_angle_deg, impact_angle_deg, surface_angle_deg
       real(8) :: restitution, efficiency, direction
       real(8) :: surface_angle, surface_axis, surface_radius
       real(8) :: hp0, rp0, zp0
@@ -202,9 +202,8 @@
 !
       ier = 0
 !
-      pend_mass     = max(0.01_8, strike_mass)
-      pend_length   = max(0.10_8, strike_length)
-      release_angle = strike_release
+      release_angle = strike_release_angle
+      impact_angle  = strike_impact_angle
       restitution   = strike_restitution
       efficiency    = strike_efficiency
       direction     = strike_direction
@@ -223,14 +222,15 @@
       surface_radius = min(r, sqrt(max(ZERO, radial2)))
       if (surface_radius == ZERO) surface_radius = r
       release_angle_deg = release_angle*180.0_8/PI
+      impact_angle_deg = impact_angle*180.0_8/PI
       direction_deg = direction*180.0_8/PI
       surface_angle_deg = surface_angle*180.0_8/PI
 !
-      call get_number('Pendulum mass [kg]', pend_mass, minv=1.0e-6_8, stat=ier)
+      call get_number('Physical pendulum release theta [deg]', &
+     &   release_angle_deg, stat=ier)
       if (ier /= 0) return
-      call get_number('Pendulum length [m]', pend_length, minv=1.0e-6_8, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum release angle [deg]', release_angle_deg, minv=ZERO, stat=ier)
+      call get_number('Physical pendulum impact theta [deg]', &
+     &   impact_angle_deg, stat=ier)
       if (ier /= 0) return
       call get_number('Restitution coeff [0,1]', restitution, minv=ZERO, maxv=ONE, stat=ier)
       if (ier /= 0) return
@@ -239,6 +239,7 @@
       call get_number('Strike direction angle [deg]', direction_deg, stat=ier)
       if (ier /= 0) return
       release_angle = release_angle_deg*PI/180.0_8
+      impact_angle = impact_angle_deg*PI/180.0_8
       direction = direction_deg*PI/180.0_8
       call get_number('Strike surface [0=rim,1=+face,2=-face]', surface, &
       &   fmt='i4', minv=0, maxv=2, stat=ier)
@@ -279,18 +280,17 @@
          return
       endif
 !
-      strike_mass        = pend_mass
-      strike_length      = pend_length
-      strike_release     = release_angle
+      strike_release_angle = release_angle
+      strike_impact_angle  = impact_angle
       strike_restitution = restitution
       strike_efficiency  = efficiency
       strike_direction   = direction
       strike_surface     = surface
       strike_velocity_mode = velocity_mode
       strike_count       = 1
-      strike2_mass       = ZERO
-      strike2_length     = ZERO
-      strike2_release    = ZERO
+      strike2_effective_mass = ZERO
+      strike2_release_angle = ZERO
+      strike2_impact_angle = ZERO
       strike2_restitution = ZERO
       strike2_efficiency = ONE
       strike2_direction  = ZERO
@@ -299,10 +299,10 @@
       strike2_speed      = ZERO
       strike2_impulse    = ZERO
 !
-      call strike_impulse_components(pend_mass, pend_length, &
-     &   release_angle, restitution, efficiency, direction, strike_point, &
+      call strike_impulse_components(release_angle, impact_angle, &
+     &   restitution, efficiency, direction, strike_point, &
      &   strike_impulse, strike_speed, omega10, omega20, omega30, &
-     &   vwx, vwy, tx, ty, tz, ier)
+     &   vwx, vwy, tx, ty, tz, strike_effective_mass, ier)
       if (ier /= 0) return
       strike_torque_tip_spin = sqrt(tx*tx + tz*tz) / &
      &   (abs(ty) + 1.0e-30_8)
@@ -327,7 +327,7 @@
       subroutine double_strike_initial_condition(ier)
 !
 !  Purpose---
-!     Compute initial velocities from two simple pendulum strikes.
+!     Compute initial velocities from two physical-pendulum strikes.
 !
       use disk_data
       use mui, only: get_number, set_string
@@ -336,15 +336,15 @@
 !
       integer, intent(out) :: ier
 !
-      real(8) :: direction_deg, direction2_deg
-      real(8) :: pend_mass, pend_length, release_angle
-      real(8) :: pend2_mass, pend2_length, release2_angle
-      real(8) :: release_angle_deg, release2_angle_deg
+      real(8) :: direction_deg
+      real(8) :: release_angle, impact_angle
+      real(8) :: release2_angle, impact2_angle
+      real(8) :: release_angle_deg, impact_angle_deg
       real(8) :: restitution, restitution2
       real(8) :: efficiency, efficiency2
       real(8) :: direction, direction2
       real(8) :: surface_angle, surface2_angle, surface_axis, surface_radius
-      real(8) :: surface_angle_deg, surface2_angle_deg, radial2
+      real(8) :: surface_angle_deg, radial2
       real(8) :: hp0, rp0, zp0
       real(8) :: domega11, domega21, domega31
       real(8) :: domega12, domega22, domega32
@@ -355,9 +355,8 @@
 !
       ier = 0
 !
-      pend_mass     = max(0.01_8, strike_mass)
-      pend_length   = max(0.10_8, strike_length)
-      release_angle = strike_release
+      release_angle = strike_release_angle
+      impact_angle  = strike_impact_angle
       restitution   = strike_restitution
       efficiency    = strike_efficiency
       direction     = strike_direction
@@ -376,15 +375,15 @@
       surface_radius = min(r, sqrt(max(ZERO, radial2)))
       if (surface_radius == ZERO) surface_radius = r
       release_angle_deg = release_angle*180.0_8/PI
+      impact_angle_deg = impact_angle*180.0_8/PI
       direction_deg = direction*180.0_8/PI
       surface_angle_deg = surface_angle*180.0_8/PI
 !
-      call get_number('Pendulum 1 mass [kg]', pend_mass, minv=1.0e-6_8, stat=ier)
+      call get_number('Pendulum 1 release theta [deg]', &
+     &   release_angle_deg, stat=ier)
       if (ier /= 0) return
-      call get_number('Pendulum 1 length [m]', pend_length, minv=1.0e-6_8, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 1 release angle [deg]', release_angle_deg, &
-     &   minv=ZERO, stat=ier)
+      call get_number('Pendulum 1 impact theta [deg]', &
+     &   impact_angle_deg, stat=ier)
       if (ier /= 0) return
       call get_number('Pendulum 1 restitution coeff [0,1]', restitution, &
      &   minv=ZERO, maxv=ONE, stat=ier)
@@ -395,6 +394,7 @@
       call get_number('Pendulum 1 direction angle [deg]', direction_deg, stat=ier)
       if (ier /= 0) return
       release_angle = release_angle_deg*PI/180.0_8
+      impact_angle = impact_angle_deg*PI/180.0_8
       direction = direction_deg*PI/180.0_8
 !
       call get_number('Strike surface [0=rim,1=+face,2=-face]', surface, &
@@ -425,38 +425,18 @@
          endif
          strike_point(3) = surface_radius*sin(surface_angle)
       endif
-      surface2_angle_deg = 180.0_8 - surface_angle_deg
       call get_number('Post-impact center velocity [0=free,1=supported,2=rolling]', &
      &   velocity_mode, fmt='i4', minv=0, maxv=2, stat=ier)
       if (ier /= 0) return
 !
-      pend2_mass = pend_mass
-      pend2_length = pend_length
-      release2_angle_deg = release_angle_deg
+!     The second pendulum is the mirrored twin of the first one by default.
+!     This keeps response files compact and avoids duplicated rod parameters.
+      release2_angle = release_angle
+      impact2_angle = impact_angle
       restitution2 = restitution
       efficiency2 = efficiency
-      direction2_deg = direction_deg + 180.0_8
-!
-      call get_number('Pendulum 2 mass [kg]', pend2_mass, minv=1.0e-6_8, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 2 length [m]', pend2_length, minv=1.0e-6_8, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 2 release angle [deg]', release2_angle_deg, &
-     &   minv=ZERO, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 2 restitution coeff [0,1]', restitution2, &
-     &   minv=ZERO, maxv=ONE, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 2 impact efficiency [0,1]', efficiency2, &
-     &   minv=ZERO, maxv=ONE, stat=ier)
-      if (ier /= 0) return
-      call get_number('Pendulum 2 direction angle [deg]', direction2_deg, stat=ier)
-      if (ier /= 0) return
-      call get_number('Strike 2 disk angle [deg]', surface2_angle_deg, stat=ier)
-      if (ier /= 0) return
-      release2_angle = release2_angle_deg*PI/180.0_8
-      direction2 = direction2_deg*PI/180.0_8
-      surface2_angle = surface2_angle_deg*PI/180.0_8
+      direction2 = direction + PI
+      surface2_angle = surface_angle + PI
 !
       radial2 = strike_point(1)**2 + strike_point(3)**2
       if (radial2 > r**2) then
@@ -483,31 +463,31 @@
       endif
 !
       strike_count       = 2
-      strike_mass        = pend_mass
-      strike_length      = pend_length
-      strike_release     = release_angle
+      strike_release_angle = release_angle
+      strike_impact_angle  = impact_angle
       strike_restitution = restitution
       strike_efficiency  = efficiency
       strike_direction   = direction
       strike_surface     = surface
       strike_velocity_mode = velocity_mode
-      strike2_mass        = pend2_mass
-      strike2_length      = pend2_length
-      strike2_release     = release2_angle
+      strike2_release_angle = release2_angle
+      strike2_impact_angle  = impact2_angle
       strike2_restitution = restitution2
       strike2_efficiency  = efficiency2
       strike2_direction   = direction2
       strike2_surface     = surface2
 !
-      call strike_impulse_components(pend_mass, pend_length, &
-     &   release_angle, restitution, efficiency, direction, strike_point, &
+      call strike_impulse_components(release_angle, impact_angle, &
+     &   restitution, efficiency, direction, strike_point, &
      &   strike_impulse, strike_speed, domega11, domega21, domega31, &
-     &   dvx1, dvy1, torque11, torque21, torque31, ier)
+     &   dvx1, dvy1, torque11, torque21, torque31, &
+     &   strike_effective_mass, ier)
       if (ier /= 0) return
-      call strike_impulse_components(pend2_mass, pend2_length, &
-     &   release2_angle, restitution2, efficiency2, direction2, strike2_point, &
+      call strike_impulse_components(release2_angle, impact2_angle, &
+     &   restitution2, efficiency2, direction2, strike2_point, &
      &   strike2_impulse, strike2_speed, domega12, domega22, domega32, &
-     &   dvx2, dvy2, torque12, torque22, torque32, ier)
+     &   dvx2, dvy2, torque12, torque22, torque32, &
+     &   strike2_effective_mass, ier)
       if (ier /= 0) return
 !
       omega10 = domega11 + domega12
@@ -534,30 +514,32 @@
 !
       end subroutine double_strike_initial_condition
 
-      subroutine strike_impulse_components(pend_mass, pend_length, &
-     &   release_angle, restitution, efficiency, direction, point, &
+      subroutine strike_impulse_components(release_angle, impact_angle, &
+     &   restitution, efficiency, direction, point, &
      &   impulse, speed, domega1, domega2, domega3, dvx, dvy, &
-     &   torque1, torque2, torque3, ier)
+     &   torque1, torque2, torque3, pend_effective_mass, ier)
 !
 !  Purpose---
-!     Convert one pendulum strike into disk velocity increments.
+!     Convert one physical-pendulum strike into disk velocity increments.
 !
       use disk_data
       use mui, only: set_string
 !
       implicit none
 !
-      real(8), intent(in) :: pend_mass, pend_length, release_angle
+      real(8), intent(in) :: release_angle, impact_angle
       real(8), intent(in) :: restitution, efficiency, direction
       real(8), intent(in) :: point(3)
       real(8), intent(out) :: impulse, speed
       real(8), intent(out) :: domega1, domega2, domega3
       real(8), intent(out) :: dvx, dvy, torque1, torque2, torque3
+      real(8), intent(out) :: pend_effective_mass
       integer, intent(out) :: ier
 !
       real(8) :: nxw, nyw, nzw, nx1, ny1, nz1, nx2, ny2, nz2
       real(8) :: tx, ty, tz, ax, ay, az, bx, by, bz
       real(8) :: denom, vwx, vwy, cpsi, spsi, cth, sth
+      real(8) :: angle_drop, lever, omega_pend
 !
       ier = 0
 !
@@ -599,14 +581,31 @@
       by = az*point(1) - ax*point(3)
       bz = ax*point(2) - ay*point(1)
 !
-      denom = ONE/pend_mass + ONE/xmass + nx2*bx + ny2*by + nz2*bz
+      lever = physical_pend_contact*cos(impact_angle - direction)
+      if (abs(lever) <= 1.0e-9_8) then
+         call set_string(1,'*** Strike initializer: pendulum lever arm is zero.')
+         ier = -1
+         return
+      endif
+      pend_effective_mass = physical_pend_inertia_pivot/(lever*lever)
+!
+      denom = ONE/pend_effective_mass + ONE/xmass + nx2*bx + ny2*by + nz2*bz
       if (denom <= ZERO) then
          call set_string(1,'*** Strike initializer: invalid effective mass.')
          ier = -1
          return
       endif
 !
-      speed = sqrt(max(ZERO, 2.0_8*g*pend_length*(ONE - cos(release_angle))))
+      angle_drop = cos(impact_angle) - cos(release_angle)
+      if (angle_drop < ZERO) then
+         call set_string(1,'*** Strike initializer: release angle cannot reach impact angle.')
+         ier = -1
+         return
+      endif
+      omega_pend = sqrt(max(ZERO, &
+     &   2.0_8*physical_pend_mass*g*physical_pend_com*angle_drop / &
+     &   physical_pend_inertia_pivot))
+      speed = abs(omega_pend*lever)
       impulse = efficiency*(ONE + restitution)*speed/denom
 !
       domega1 = impulse*tx/(xmass*xk12)

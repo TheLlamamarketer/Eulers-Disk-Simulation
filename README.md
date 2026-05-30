@@ -10,6 +10,10 @@ simulation program. This copy keeps that core code, adds a simpler `run.bat`
 workflow, preset input files, and a native OpenGL viewer that builds with
 gfortran/gcc.
 
+Generated binaries, plots, CSVs, and simulation output are intentionally kept
+out of the active source layout. If they already exist locally, they can be
+regenerated from the commands below.
+
 The normal entry point is:
 
 ```bat
@@ -83,6 +87,10 @@ again overwrites the current versions.
 The folder can be deleted and regenerated with `run.bat`. It should not be used
 to store experiment results.
 
+`generated/` is for search CSVs, plots, and copied best-run reports. The active
+tooling writes there by default, but the source of truth is the scripts and
+presets.
+
 ## Source Layout
 
 | Path | Role |
@@ -95,9 +103,25 @@ to store experiment results.
 | `edisk_gl_viewer.c` | Native OpenGL viewer for `animat.txt`. |
 | `edisk_ic_viewer.c` | Native OpenGL viewer for initial rotations and omega components. |
 | `init/` | Preset response files for reproducible runs. |
+| `tools/` | Python analysis, launch-search, and plotting helpers. |
 | `archive/` | Historical/reference material that is not part of the active build. |
 
 More detail is in `docs/CODE_REFERENCE.md` and `docs/PHYSICS_MODEL.md`.
+
+## Python Tools
+
+| Command | Purpose |
+| --- | --- |
+| `py -3 tools\launch_parameter_search.py` | Search release theta and impact theta; geometry stays at the preset unless explicitly varied. |
+| `py -3 tools\launch_search_heatmap.py` | Plot heatmaps from a launch-parameter-search CSV. |
+| `py -3 tools\strike_angle_scan.py` | Hold release/impact theta fixed, scan strike direction, and plot lifetime/contact mode over time. |
+| `py -3 tools\score_paired_impulse_grid.py` | Score paired face-impulse geometry without running the simulator. |
+| `py -3 tools\show_paired_impulse_geometry.py` | Draw a 3D paired-impulse geometry diagnostic. |
+| `py -3 tools\pendulum_rod.py` | Inspect the fixed physical pendulum release/impact angles and effective mass. |
+
+For double-click use, run `search_launch_parameters.bat` or
+`scan_strike_angle.bat`. Each file has an `ARGS` line near the top for changing
+the defaults without typing commands.
 
 ## Viewer Controls
 

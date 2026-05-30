@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+
+build_gfortran/
+generated/
+
+animat.txt
+result.txt
+report.txt
+
+*.exe
+*.dll
+*.o
+*.mod

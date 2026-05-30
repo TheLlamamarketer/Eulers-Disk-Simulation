@@ -12,6 +12,7 @@ if exist "C:\Strawberry\c\bin" set "PATH=C:\Strawberry\c\bin;%PATH%"
 echo Euler disk workflow
 echo.
 
+if /I "%~1"=="--build-only" goto build_only
 if not "%~1"=="" goto run_input_file
 
 if exist "animat.txt" (
@@ -46,6 +47,13 @@ goto view_new
 "%SIM%"
 if errorlevel 1 exit /b %errorlevel%
 goto view_new
+
+:build_only
+echo Building simulation...
+call :build_simulation
+if errorlevel 1 exit /b %errorlevel%
+echo Build finished: "%SIM%"
+exit /b 0
 
 :run_input_file
 set "INPUT_FILE=%~1"

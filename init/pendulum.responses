@@ -8,9 +8,8 @@
 0                    # Initial Y rotation phi [deg]
 
 1                    # Initial condition mode: 0=manual, 1=pendulum strike, 2=double pendulum strike
-0.25                 # Pendulum mass [kg]
-0.8                  # Pendulum length [m]
-27.5                 # Pendulum release angle [deg]
+-50.73               # Physical pendulum release theta [deg]
+45                   # Physical pendulum impact theta [deg]
 0.2                  # Restitution coefficient [-]
 0.9                  # Impact efficiency [-]
 -5                   # Strike direction angle [deg]

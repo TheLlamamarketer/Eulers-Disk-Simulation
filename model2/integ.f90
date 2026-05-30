@@ -139,9 +139,12 @@
          else
             write( iuout,'(4X,A)') 'Initial condition mode: pendulum strike'
          endif
-         write( iuout,'(4X,A,2X,F8.4)') 'Pendulum mass          [kg] ',strike_mass
-         write( iuout,'(4X,A,2X,F8.4)') 'Pendulum length        [m]  ',strike_length
-         write( iuout,'(4X,A,2X,F8.4)') 'Release angle          [rad]',strike_release
+         write( iuout,'(4X,A,2X,F8.4)') 'Rod release theta      [rad]', &
+     &      strike_release_angle
+         write( iuout,'(4X,A,2X,F8.4)') 'Rod impact theta       [rad]', &
+     &      strike_impact_angle
+         write( iuout,'(4X,A,2X,F8.4)') 'Rod effective mass     [kg] ', &
+     &      strike_effective_mass
          write( iuout,'(4X,A,2X,F8.4)') 'Restitution coeff      [-]  ',strike_restitution
          write( iuout,'(4X,A,2X,F8.4)') 'Impact efficiency      [-]  ',strike_efficiency
          write( iuout,'(4X,A,2X,F8.4)') 'Strike direction       [rad]',strike_direction
@@ -150,15 +153,15 @@
      &      strike_velocity_mode
          write( iuout,'(4X,A,3(2X,F9.4))') 'Strike point body [m]       ', &
      &      strike_point(1),strike_point(2),strike_point(3)
-         write( iuout,'(4X,A,2X,F8.4)') 'Pendulum speed         [m/s]',strike_speed
+         write( iuout,'(4X,A,2X,F8.4)') 'Rod impact speed       [m/s]',strike_speed
          write( iuout,'(4X,A,2X,E10.3)') 'Impact impulse         [Ns] ',strike_impulse
          if (strike_count == 2) then
             write( iuout,'(4X,A,2X,F8.4)') &
-     &         'Pendulum 2 mass        [kg] ',strike2_mass
+     &         'Rod 2 release theta    [rad]',strike2_release_angle
             write( iuout,'(4X,A,2X,F8.4)') &
-     &         'Pendulum 2 length      [m]  ',strike2_length
+     &         'Rod 2 impact theta     [rad]',strike2_impact_angle
             write( iuout,'(4X,A,2X,F8.4)') &
-     &         'Release 2 angle        [rad]',strike2_release
+     &         'Rod 2 effective mass   [kg] ',strike2_effective_mass
             write( iuout,'(4X,A,2X,F8.4)') &
      &         'Restitution 2 coeff    [-]  ',strike2_restitution
             write( iuout,'(4X,A,2X,F8.4)') &
@@ -171,7 +174,7 @@
      &         'Strike point 2 body [m]     ', &
      &         strike2_point(1),strike2_point(2),strike2_point(3)
             write( iuout,'(4X,A,2X,F8.4)') &
-     &         'Pendulum 2 speed       [m/s]',strike2_speed
+     &         'Rod 2 impact speed     [m/s]',strike2_speed
             write( iuout,'(4X,A,2X,E10.3)') &
      &         'Impact 2 impulse       [Ns] ',strike2_impulse
          endif

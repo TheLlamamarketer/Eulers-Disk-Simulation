@@ -17,6 +17,12 @@
       real(8), public, parameter :: HPI    = PI/2.0_8
 !
       real(8), public, parameter :: g = 9.8067_8  ! gravity acceleration [m/s^2]
+      real(8), public, parameter :: physical_pend_mass = 0.39522465_8
+      real(8), public, parameter :: physical_pend_com = 0.3605_8
+      real(8), public, parameter :: physical_pend_contact = 0.7375_8
+      real(8), public, parameter :: physical_pend_inertia_cm = 0.017704504_8
+      real(8), public, parameter :: physical_pend_inertia_pivot = &
+     &   physical_pend_inertia_cm + physical_pend_mass*physical_pend_com**2
       integer, public, parameter :: rolling = 1
       integer, public, parameter :: sliding = 2
       integer, public, parameter :: ROLL = 3
@@ -83,9 +89,9 @@
       real(8), public :: omega10, omega20, omega30
 !
       integer, public :: strike_count = 0
-      real(8), public :: strike_mass = ZERO
-      real(8), public :: strike_length = ZERO
-      real(8), public :: strike_release = ZERO
+      real(8), public :: strike_effective_mass = ZERO
+      real(8), public :: strike_release_angle = ZERO
+      real(8), public :: strike_impact_angle = ZERO
       real(8), public :: strike_restitution = ZERO
       real(8), public :: strike_efficiency = ONE
       real(8), public :: strike_direction = ZERO
@@ -94,9 +100,9 @@
       integer, public :: strike_velocity_mode = 1
       real(8), public :: strike_speed = ZERO
       real(8), public :: strike_impulse = ZERO
-      real(8), public :: strike2_mass = ZERO
-      real(8), public :: strike2_length = ZERO
-      real(8), public :: strike2_release = ZERO
+      real(8), public :: strike2_effective_mass = ZERO
+      real(8), public :: strike2_release_angle = ZERO
+      real(8), public :: strike2_impact_angle = ZERO
       real(8), public :: strike2_restitution = ZERO
       real(8), public :: strike2_efficiency = ONE
       real(8), public :: strike2_direction = ZERO

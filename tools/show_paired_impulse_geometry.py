@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from impulses_sweep import startup_eval
+from score_paired_impulse_grid import startup_eval
 
 
 def draw_rotation_arc(

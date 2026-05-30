@@ -120,12 +120,19 @@ instantaneous mathematical discontinuity.
 | `1` | Simple pendulum strike initializer. |
 | `2` | Mirrored double-pendulum strike initializer. |
 
-The pendulum strike mode computes a launch impulse from pendulum mass, length,
-release angle, restitution, efficiency, strike direction, and strike point:
+The strike initializer uses the measured physical rod pendulum from
+`tools/pendulum_rod.py`, not an ideal point mass. Its mass, center-of-mass
+radius, contact radius, and pivot inertia are fixed constants in
+`model2/disk_data.f90`. User input controls only the rod release angle
+`theta0`, the rod impact angle `thetai`, restitution, efficiency, strike
+direction, and strike point:
 
 ```text
-v_pendulum = sqrt(2 g L (1 - cos(release_angle)))
-J          = efficiency * (1 + restitution) * v_pendulum / effective_mass_den
+omega_pend = sqrt(2 m g Rcm (cos(thetai) - cos(theta0)) / I_pivot)
+lever      = Rcontact cos(thetai - strike_direction)
+m_eff      = I_pivot / lever^2
+v_impact   = |omega_pend lever|
+J          = efficiency * (1 + restitution) * v_impact / impact_den
 omega+     = omega- + I^-1 (r_contact x J n)
 ```
 
@@ -137,18 +144,15 @@ The strike point is selected on the disk surface:
 | `1=+face` | face radius and face angle |
 | `2=-face` | face radius and face angle |
 
-Double pendulum mode reuses the first strike radius for pendulum 2, but gives the
-second strike its own disk-plane angle. The interactive default is the first
-strike angle mirrored as `180 degrees - angle`, so a strike at angle 30 and
-radius `a` pairs with a second strike at angle 150 and radius `a`. The second
-strike direction also defaults to the first direction plus 180 degrees, which
-makes identical paired pendulums add a rotational couple instead of cancelling.
-For face strikes,
-`+face` still pairs with `-face` and vice versa; rim strikes keep the same axial
-offset. The two pendulums have independent mass, length, release angle,
-restitution, efficiency, strike direction, and second disk-angle inputs. Their
-computed impulses are added before the initial angular velocity and optional
-free-body center velocity are assigned.
+Double pendulum mode mirrors the first pendulum in code. Pendulum 2 uses the
+same release angle, impact angle, restitution, efficiency, and strike radius.
+Its disk-plane point is the opposite point, `angle + 180 degrees`, so a strike at
+angle 30 and radius `a` pairs with a second strike at angle 210 and radius `a`.
+The second strike direction is the first direction plus 180 degrees, which makes
+identical paired pendulums add a rotational couple instead of cancelling. For
+face strikes, `+face` pairs with `-face` and vice versa; rim strikes keep the
+same axial offset. The two computed impulses are added before the initial
+angular velocity and optional free-body center velocity are assigned.
 
 For symmetric face strikes, the direction pairing matters. If the first strike
 uses direction `d`, the physically useful mirrored second direction is
@@ -166,8 +170,9 @@ Post-impact center velocity has three modes:
 | `1=supported` | The strike creates angular velocity but no full center impulse. |
 | `2=rolling` | Center velocity is set to match instantaneous no-slip rolling. |
 
-`report.txt` records the generated strike point or strike points, pendulum
-speed, impulse, initial slip speed, energy split, and wobble/axis-spin
+`report.txt` records the generated strike point or strike points, rod
+normal-impact speed, effective mass, impulse, initial slip speed, energy split,
+and wobble/axis-spin
 diagnostics. In this model the disk symmetry-axis spin is the `omega2`
 component; large `omega1`/`omega3` compared with `omega2` means the launch is
 mostly a tipping/orbiting impulse rather than a long-lived Euler-disk spin.
@@ -179,7 +184,8 @@ direction offsets can look useful early in a run, but they add wobble torque and
 can drive late rolling/sliding chatter or step-size failure. Increasing the face
 strike radius reduces the unavoidable finite-thickness wobble contribution.
 
-`tools/sweep_double_pendulum.py` runs bounded sweeps over pendulum mass, release
-angle, strike direction, and face radius while preserving `theta=0`, free
-post-impact center velocity, the mirrored upper/lower impact points, and the
-current friction/resistance values from `init/double_pendulum.responses`.
+`tools/launch_parameter_search.py` runs bounded searches over rod release
+angle, rod impact angle, strike direction, face radius, and face angle while
+preserving `theta=0`, free post-impact center velocity, the mirrored upper/lower
+impact points, mirrored second-pendulum settings, and the current friction/resistance values from
+`init/double_pendulum.responses`.

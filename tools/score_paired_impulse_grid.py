@@ -1,10 +1,13 @@
+#!/usr/bin/env python3
+"""Score paired face-impulse geometry without running the full simulator."""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
-G = 9.8067
-THETA_LINE_SMOOTH = 2.0e-2
-SLIP_REGULARIZATION = 1.0e-3
+from launch_model import G, disk_volume, normal_load_scan as scan_normal_load
+
+
 NORMAL_MARGIN_G = 0.25
 LIFTOFF_COST = 1.0e6
 AXIS_SPIN_TARGET = 15.0
@@ -20,105 +23,6 @@ def skew(v):
     ])
 
 
-def disk_volume(radius, height, fillet):
-    f = max(0.0, min(fillet, height / 2.0, radius))
-    volume = np.pi * (
-        height * radius**2
-        + np.pi * radius * f**2
-        - np.pi * f**3
-        + (10.0 / 3.0) * f**3
-        - 4.0 * radius * f**2
-    )
-    return volume if volume > 0.0 else np.pi * radius**2 * height
-
-
-def contact_geometry(theta, r, d, rho, theta_line_smooth=THETA_LINE_SMOOTH):
-    """Match the near-flat contact geometry used by model2/disk0.f90."""
-
-    hh = d / 2.0
-    sith = np.sin(theta)
-    coth = np.cos(theta)
-    abth = abs(theta)
-
-    if theta_line_smooth > 0.0 and abth < theta_line_smooth:
-        u = theta / theta_line_smooth
-        sig = 1.5 * u - 0.5 * u**3
-        dsig = (1.5 - 1.5 * u**2) / theta_line_smooth
-        hmag = hh - rho * (1.0 - abs(sith))
-        if theta > 0.0:
-            dhmag = rho * coth
-        elif theta < 0.0:
-            dhmag = -rho * coth
-        else:
-            dhmag = 0.0
-        hp = hmag * sig
-        dhp = dhmag * sig + hmag * dsig
-        rp = r - rho * (1.0 - coth)
-        drp = -rho * sith
-    elif theta == 0.0:
-        hp = 0.0
-        rp = r
-        dhp = rho
-        drp = 0.0
-    elif 0.0 < theta <= np.pi / 2.0:
-        hp = hh - rho * (1.0 - sith)
-        rp = r - rho * (1.0 - coth)
-        dhp = rho * coth
-        drp = -rho * sith
-    elif -np.pi / 2.0 <= theta < 0.0:
-        hp = -hh + rho * (1.0 + sith)
-        rp = r - rho * (1.0 - coth)
-        dhp = rho * coth
-        drp = -rho * sith
-    else:
-        hp = np.sign(theta) * hh
-        rp = 0.0
-        dhp = np.sign(theta)
-        drp = 0.0
-
-    yp = -hp * coth + rp * sith
-    zp = -(hp * sith + rp * coth)
-    dyp = -dhp * coth + drp * sith - zp
-    return hp, rp, yp, zp, dyp
-
-
-def sliding_normal_load(
-    omega,
-    theta,
-    r,
-    d,
-    rho,
-    vc=(0.0, 0.0),
-    mu_k=0.25,
-    rolling_scales=(0.00018, 0.00065, 0.0008),
-):
-    """Return disk0's mass-normalized sliding normal force."""
-
-    omega1, omega2, omega3 = omega
-    hp, rp, yp, zp, dyp = contact_geometry(theta, r, d, rho)
-    sith = np.sin(theta)
-    coth = np.cos(theta)
-    tanth = sith / coth
-    xk12 = (3.0 * r**2 + d**2) / 12.0
-    xk22 = 0.5 * r**2
-
-    omegax = omega1
-    xmurx = rolling_scales[0] * r
-    xm1 = 0.0 if omegax == 0.0 else -xmurx * np.sign(omegax)
-
-    vcx, vcy = vc
-    vpx = vcx - rp * omega2 + hp * omega3
-    vpy = vcy - zp * omega1
-    vp = np.hypot(vpx, vpy)
-    vp_eff = np.hypot(vp, SLIP_REGULARIZATION)
-    xmuy = -mu_k * vpy / vp_eff
-
-    a = xk22 * omega2 - xk12 * tanth * omega3
-    b3 = G - omega1**2 * dyp
-    den = xk12 + yp * (yp + xm1 - xmuy * zp)
-    return (xk12 * b3 - yp * omega3 * a) / den
-
-
 def normal_load_scan(
     omega,
     r,
@@ -132,25 +36,27 @@ def normal_load_scan(
 ):
     """Approximate early post-impact contact safety with frozen omega."""
 
-    times = np.linspace(0.0, horizon, samples)
-    fz_values = np.array([
-        sliding_normal_load(
-            omega,
-            theta0 + omega[0] * t,
-            r,
-            d,
-            rho,
-            vc=vc,
-            **kwargs,
-        )
-        for t in times
-    ])
-    idx = int(np.argmin(fz_values))
+    xk12 = (3.0 * r**2 + d**2) / 12.0
+    xk22 = 0.5 * r**2
+    scan = scan_normal_load(
+        tuple(float(value) for value in omega),
+        r,
+        d,
+        rho,
+        xk12,
+        xk22,
+        tuple(float(value) for value in vc),
+        kwargs.get("mu_k", 0.25),
+        kwargs.get("rolling_scales", (0.00018, 0.00065, 0.0008))[0],
+        theta0=theta0,
+        horizon=horizon,
+        samples=samples,
+    )
     return {
-        "min_fz": float(fz_values[idx]),
-        "min_fz_g": float(fz_values[idx] / G),
-        "time": float(times[idx]),
-        "theta": float(theta0 + omega[0] * times[idx]),
+        "min_fz": scan["startup_min_normal"],
+        "min_fz_g": scan["startup_min_normal_g"],
+        "time": scan["startup_min_normal_time"],
+        "theta": scan["startup_min_normal_theta"],
     }
 
 

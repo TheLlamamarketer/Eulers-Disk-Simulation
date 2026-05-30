@@ -1,6 +1,6 @@
 # Long double pendulum launch tuned for a clean, low-nutation run.
-# The second strike direction is the first direction + 180 deg, so the
-# horizontal impulses nearly cancel while the disk-axis torques add.
+# The second pendulum is mirrored in code: same release/impact/restitution/
+# efficiency, strike direction + 180 deg, and disk angle + 180 deg.
 
 0.05                 # Disk radius [m]
 0.01                 # Disk height [m]
@@ -12,9 +12,8 @@
 0                    # Initial Y rotation phi [deg]
 
 2                    # Initial condition mode: 0=manual, 1=pendulum strike, 2=double pendulum strike
-0.25                 # Pendulum 1 mass [kg]
-0.8                  # Pendulum 1 length [m]
-27.5                 # Pendulum 1 release angle [deg]
+-40                  # Pendulum 1 release theta [deg]
+20                   # Pendulum 1 impact theta [deg]
 0.2                  # Pendulum 1 restitution coefficient [-]
 0.9                  # Pendulum 1 impact efficiency [-]
 -15                  # Pendulum 1 strike direction angle [deg]
@@ -22,13 +21,6 @@
 0.045                # Strike face radius in disk plane [m]
 135                  # Strike face angle in disk plane [deg]
 0                    # Post-impact center velocity: 0=free, 1=supported, 2=rolling
-0.25                 # Pendulum 2 mass [kg]
-0.8                  # Pendulum 2 length [m]
-27.5                 # Pendulum 2 release angle [deg]
-0.2                  # Pendulum 2 restitution coefficient [-]
-0.9                  # Pendulum 2 impact efficiency [-]
-180-15               # Pendulum 2 strike direction angle [deg]
-180 + 135            # Strike 2 disk angle [deg]
 
 0.45                 # Static friction coefficient mu_s [-]
 0.25                 # Dynamic friction coefficient mu_k [-]
@@ -36,7 +28,7 @@
 0.00065              # Rolling resistance y/R [-]
 0.0008               # Boring/spin resistance z/R [-]
 
-100                   # End time [s]
+100                  # End time [s]
 0.001                # Print time step [s]
 1e-7                 # Relative tolerance
 1e-7                 # Absolute tolerance

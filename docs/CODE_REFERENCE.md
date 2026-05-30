@@ -71,6 +71,22 @@ animation frames by simulation time and uses quaternion interpolation for disk
 orientation, which avoids visible jumps when Euler angles wrap or cross awkward
 branches.
 
+## Python Tools
+
+Python utilities live under `tools/`. The active launch-search scripts share
+common preset parsing, simulator output parsing, and preflight math through
+`tools/launch_model.py`.
+
+| File | Responsibility |
+| --- | --- |
+| `tools/launch_model.py` | Shared constants, preset parsing, candidate response writing, report/result parsing, scoring, and startup preflight helpers. |
+| `tools/launch_parameter_search.py` | Runs simulator-backed searches over release theta, impact theta, strike direction, radius, and face angle. |
+| `tools/launch_search_heatmap.py` | Plots direction/face-angle heatmaps from launch-search CSVs. |
+| `tools/strike_angle_scan.py` | Plots time-versus-strike-angle maps and contact modes for a fixed launch setup. |
+| `tools/score_paired_impulse_grid.py` | Analytic, no-solver score grid for paired face impulses. |
+| `tools/show_paired_impulse_geometry.py` | 3D visual diagnostic for one paired face-impulse setup. |
+| `tools/pendulum_rod.py` | Physical rod-pendulum helper and standalone impact animation. |
+
 ## Fixed Output Names
 
 The output names are defined in `model2/disk_data.f90`:
